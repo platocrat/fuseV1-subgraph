@@ -5,20 +5,33 @@
     "build-contract": "solc contracts/Gravity.sol --abi -o abis --overwrite && solc contracts/Gravity.sol --bin -o bin --overwrite",
     "create": "graph create platocrat/fuse-subgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create platocrat/fuse-subgraph --node http://127.0.0.1:8020",
-    "codegen": "graph codegen",
+    "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "deploy": "graph deploy platocrat/fuse-subgraph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy platocrat/fuse-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local": "graph deploy platocrat/fuse-subgraph --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "generate-types": "npx typechain --target truffle-v5 --out-dir ./types './build/*/*.json'"
+  },
+  "resolutions": {
+    "assemblyscript": "git+https://github.com/AssemblyScript/assemblyscript.git#v0.6"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.0",
-    "@graphprotocol/graph-ts": "^0.20.0"
+    "@graphprotocol/graph-ts": "^0.20.0",
+    "@nomiclabs/hardhat-truffle5": "^2.0.0",
+    "@typechain/hardhat": "^2.0.2",
+    "@typechain/truffle-v5": "^5.0.0",
+    "@types/node": "^15.12.2",
+    "hardhat": "^2.3.3",
+    "ts-generator": "^0.1.1",
+    "ts-node": "^10.0.0",
+    "typechain": "^5.0.0",
+    "typescript": "^4.3.3"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "truffle": "^5.0.4",
-    "truffle-contract": "^4.0.5",
-    "truffle-hdwallet-provider": "^1.0.4"
+    "@truffle/contract": "^4.3.20",
+    "@truffle/hdwallet-provider": "^1.4.0"
   }
 }

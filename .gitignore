@@ -1,3 +1,10 @@
+# -------------- Project --------------
+contracts
+types
+bin
+subgraph.yaml-e
+package-lock.json
+
 # Logs
 logs
 *.log
