@@ -1,9 +1,25 @@
+type FusePool @entity {
+  id: ID!
+  "Name of the Fuse pool"
+  name: String!
+  "Creator of the Fuse pool"
+  creator: Bytes!
+  "Comptroller address"
+  comptroller: Bytes!
+  "Block at which the tx, to create the Fuse pool, was first included"
+  blockPosted: BigInt!
+  "Block timestamp of when the tx, to create the Fuse pool, was first included"
+  timestampPosted: BigInt!
+}
+
 """
 The Comptroller type has protocol level variables stored
 """
 type Comptroller @entity {
     "ID is set to 1"
     id: ID!
+    "Admin address of the Comptroller"
+    admin: Bytes!
     "Address of price oracle the comptroller uses"
     priceOracle: Bytes
     "Factor used to determine repayAmount for liquidating"
@@ -339,12 +355,3 @@ type RepayEvent implements UnderlyingTransfer @entity {
     "Payer of the borrow funds"
     payer: Bytes!
 }
-
-# type FusePool @entity {
-#   id: ID!
-#   name: String!
-#   creator: String!
-#   isPrivate: Boolean!
-#   blockPosted: Int!
-#   timestampPosted: Int!
-# }
