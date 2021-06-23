@@ -10,7 +10,7 @@ dataSources:
     source:
       address: '0x835482FE0532f169024d5E9410199369aAD5C77E'
       abi: FusePoolDirectory
-      startBlock: 10674556
+      startBlock: 12059666
       # startBlock: 12_674_533
     mapping:
       kind: ethereum/events
@@ -24,6 +24,8 @@ dataSources:
       abis:
         - name: FusePoolDirectory
           file: ./abis/Fuse/FusePoolDirectory.json
+        - name: Comptroller
+          file: ./abis/Comptroller.json
       eventHandlers:
         - event: PoolRegistered(uint256,(string,address,address,uint256,uint256))
           handler: handlePoolRegistered

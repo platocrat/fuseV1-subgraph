@@ -2,7 +2,13 @@
 
 // For each division by 10, add one to exponent to truncate one significant figure
 import { BigDecimal, BigInt, Bytes, Address } from '@graphprotocol/graph-ts'
-import { AccountCToken, Account, AccountCTokenTransaction } from '../types/schema'
+import {
+  Comptroller as Comptroller_Type,
+  AccountCToken,
+  Account,
+  AccountCTokenTransaction
+} from '../types/schema'
+import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
 export function exponentToBigDecimal(decimals: i32): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -72,6 +78,12 @@ export function updateCommonCTokenStats(
   )
   cTokenStats.accrualBlockNumber = blockNumber
   return cTokenStats as AccountCToken
+}
+
+export function getComptrollerIndex(comptrollerAddress: Address): string {
+  let comptroller = Comptroller.bind(comptrollerAddress)
+
+  return comptroller
 }
 
 export function getOrCreateAccountCTokenTransaction(

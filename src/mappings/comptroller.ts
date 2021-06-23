@@ -13,7 +13,7 @@ import {
 
 import { CToken } from '../types/templates'
 import { Market, Comptroller, Account } from '../types/schema'
-import { mantissaFactorBD, updateCommonCTokenStats, createAccount } from './helpers'
+import { mantissaFactorBD, updateCommonCTokenStats, createAccount, getComptrollerIndex } from './helpers'
 import { createMarket } from './markets'
 
 export function handleMarketListed(event: MarketListed): void {
@@ -77,8 +77,9 @@ export function handleMarketExited(event: MarketExited): void {
 }
 
 export function handleNewCloseFactor(event: NewCloseFactor): void {
-  let comptroller = Comptroller.load('1')
+  let comptroller = Comptroller.load('0')
   comptroller.closeFactor = event.params.newCloseFactorMantissa
+  comptroller.id = '0'
   comptroller.save()
 }
 
@@ -97,7 +98,7 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
 
 // This should be the first event acccording to etherscan but it isn't.... price oracle is. weird
 export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): void {
-  let comptroller = Comptroller.load('1')
+  let comptroller = Comptroller.load('0')
   comptroller.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
   comptroller.save()
 }
@@ -110,10 +111,10 @@ export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): v
 // }
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  let comptroller = Comptroller.load('1')
+  let comptroller = Comptroller.load('0')
   // This is the first event used in this mapping, so we use it to create the entity
   if (comptroller == null) {
-    comptroller = new Comptroller('1')
+    comptroller = new Comptroller('0')
   }
   comptroller.priceOracle = event.params.newPriceOracle
   comptroller.save()

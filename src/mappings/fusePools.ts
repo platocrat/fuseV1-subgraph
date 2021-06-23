@@ -1,5 +1,9 @@
-import { Address } from '@graphprotocol/graph-ts'
-import { FusePoolDirectory, FusePoolDirectory__poolsResult, PoolRegistered } from '../types/FusePoolDirectory/FusePoolDirectory'
+import { Address, BigInt, ethereum } from '@graphprotocol/graph-ts'
+import {
+  FusePoolDirectory,
+  FusePoolDirectory__poolsResult,
+  PoolRegistered
+} from '../types/FusePoolDirectory/FusePoolDirectory'
 import { Comptroller as Comptroller_Type, FusePool } from '../types/schema'
 import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
@@ -10,8 +14,7 @@ import { Comptroller } from '../types/templates/Comptroller/Comptroller'
  * @returns fusePool A `FusePool` object
  */
 export function createPool(comptrollerAddress: string, poolRegistered: PoolRegistered): FusePool {
-  let pool: FusePoolDirectory__poolsResult,
-    fusePool: FusePool,
+  let fusePool: FusePool,
     fusePoolDirectoryAddress = '0x835482FE0532f169024d5E9410199369aAD5C77E'
 
   let fusePoolDirectory = FusePoolDirectory.bind(
@@ -23,13 +26,27 @@ export function createPool(comptrollerAddress: string, poolRegistered: PoolRegis
 
   fusePool = new FusePool(comptrollerAddress)
 
-  pool = fusePoolDirectory.pools(poolRegistered.logIndex)
+  let pool = fusePoolDirectory.try_pools(poolRegistered.logIndex),
+    admin = comptroller.try_admin()
 
-  fusePool.name = pool.value0
-  fusePool.creator = comptroller.admin() // pool.value1
+  fusePool.id = poolRegistered.logIndex.toString()
   fusePool.comptroller = Address.fromString(comptrollerAddress) // pool.value2
-  fusePool.blockPosted = pool.value3 // pool.value3
-  fusePool.timestampPosted = pool.value4 // pool.value4
+  admin.reverted // pool.value1
+    ? fusePool.creator = Address.fromString('0x0000000000000000000000000000000000000000')
+    : fusePool.creator = admin.value
+
+  if (pool.reverted) {
+    let timestamp0 = BigInt.fromI32(0)
+
+    fusePool.name = 'no name detected'
+    fusePool.blockPosted = 'no timestamp detected'
+    fusePool.timestampPosted = 'no timestamp detected'
+  } else {
+    fusePool.name = pool.value.value0
+    fusePool.blockPosted = pool.value.value3.toString() // pool.value3
+    fusePool.timestampPosted = pool.value.value4.toString() // pool.
+  }
+
 
   return fusePool
 }

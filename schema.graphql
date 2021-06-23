@@ -7,9 +7,9 @@ type FusePool @entity {
   "Comptroller address"
   comptroller: Bytes!
   "Block at which the tx, to create the Fuse pool, was first included"
-  blockPosted: BigInt!
+  blockPosted: String!
   "Block timestamp of when the tx, to create the Fuse pool, was first included"
-  timestampPosted: BigInt!
+  timestampPosted: String!
 }
 
 """
@@ -19,7 +19,7 @@ type Comptroller @entity {
     "ID is set to 1"
     id: ID!
     "Admin address of the Comptroller"
-    admin: Bytes!
+    admin: Bytes
     "Address of price oracle the comptroller uses"
     priceOracle: Bytes
     "Factor used to determine repayAmount for liquidating"

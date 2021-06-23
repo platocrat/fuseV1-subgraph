@@ -121,6 +121,9 @@ export function createMarket(marketAddress: string): Market {
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
+    /**
+     * @TODO Refactor this `createMarket()` method to use `FusePool`.
+     */
     market.underlyingAddress = contract.underlying()
     let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
     market.underlyingDecimals = underlyingContract.decimals()

@@ -29,8 +29,16 @@
       },
       {
         "components": [
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
           {
             "internalType": "address",
             "name": "comptroller",
@@ -57,9 +65,21 @@
     "type": "event"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "deployerWhitelist",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function",
     "constant": true
@@ -67,7 +87,13 @@
   {
     "inputs": [],
     "name": "enforceDeployerWhitelist",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function",
     "constant": true
@@ -75,27 +101,67 @@
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function",
     "constant": true
   },
   {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "name": "poolExists",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function",
     "constant": true
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "pools",
     "outputs": [
-      { "internalType": "string", "name": "name", "type": "string" },
-      { "internalType": "address", "name": "creator", "type": "address" },
-      { "internalType": "address", "name": "comptroller", "type": "address" },
-      { "internalType": "uint256", "name": "blockPosted", "type": "uint256" },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "comptroller",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "blockPosted",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "timestampPosted",
@@ -115,7 +181,11 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
     "name": "transferOwnership",
     "outputs": [],
@@ -155,7 +225,11 @@
   },
   {
     "inputs": [
-      { "internalType": "address[]", "name": "deployers", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "deployers",
+        "type": "address[]"
+      }
     ],
     "name": "_whitelistDeployers",
     "outputs": [],
@@ -164,36 +238,78 @@
   },
   {
     "inputs": [
-      { "internalType": "string", "name": "name", "type": "string" },
-      { "internalType": "address", "name": "comptroller", "type": "address" }
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "comptroller",
+        "type": "address"
+      }
     ],
     "name": "registerPool",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "string", "name": "name", "type": "string" },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
       {
         "internalType": "address",
         "name": "implementation",
         "type": "address"
       },
-      { "internalType": "bool", "name": "enforceWhitelist", "type": "bool" },
-      { "internalType": "uint256", "name": "closeFactor", "type": "uint256" },
-      { "internalType": "uint256", "name": "maxAssets", "type": "uint256" },
+      {
+        "internalType": "bool",
+        "name": "enforceWhitelist",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "closeFactor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxAssets",
+        "type": "uint256"
+      },
       {
         "internalType": "uint256",
         "name": "liquidationIncentive",
         "type": "uint256"
       },
-      { "internalType": "address", "name": "priceOracle", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "priceOracle",
+        "type": "address"
+      }
     ],
     "name": "deployPool",
     "outputs": [
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "address", "name": "", "type": "address" }
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -204,8 +320,16 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
           {
             "internalType": "address",
             "name": "comptroller",
@@ -235,11 +359,23 @@
     "inputs": [],
     "name": "getPublicPools",
     "outputs": [
-      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
       {
         "components": [
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
           {
             "internalType": "address",
             "name": "comptroller",
@@ -267,15 +403,31 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
     ],
     "name": "getPoolsByAccount",
     "outputs": [
-      { "internalType": "uint256[]", "name": "", "type": "uint256[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      },
       {
         "components": [
-          { "internalType": "string", "name": "name", "type": "string" },
-          { "internalType": "address", "name": "creator", "type": "address" },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
           {
             "internalType": "address",
             "name": "comptroller",
@@ -303,11 +455,19 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
     ],
     "name": "getBookmarks",
     "outputs": [
-      { "internalType": "address[]", "name": "", "type": "address[]" }
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
     ],
     "stateMutability": "view",
     "type": "function",
@@ -315,7 +475,11 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "comptroller", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "comptroller",
+        "type": "address"
+      }
     ],
     "name": "bookmarkPool",
     "outputs": [],
