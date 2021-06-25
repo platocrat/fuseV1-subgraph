@@ -1,33 +1,20 @@
 type FusePool @entity {
+  "Same as `comptroller` field to allow for dynamic loading of FusePool entities"
   id: ID!
   "Name of the Fuse pool"
   name: String!
-  "Creator of the Fuse pool"
+  "Creator/admin of the Fuse pool"
   creator: Bytes!
   "Comptroller address"
   comptroller: Bytes!
   "Block at which the tx, to create the Fuse pool, was first included"
-  blockPosted: String!
+  blockPosted: BigInt!
   "Block timestamp of when the tx, to create the Fuse pool, was first included"
-  timestampPosted: String!
-}
-
-"""
-The Comptroller type has protocol level variables stored
-"""
-type Comptroller @entity {
-    "ID is set to 1"
-    id: ID!
-    "Admin address of the Comptroller"
-    admin: Bytes
-    "Address of price oracle the comptroller uses"
-    priceOracle: Bytes
-    "Factor used to determine repayAmount for liquidating"
-    closeFactor: BigInt
-    "The percent bonus liquidators get for liquidating"
-    liquidationIncentive: BigInt
-    "Max assets a single user can enter"
-    maxAssets: BigInt
+  timestampPosted: BigInt!
+  "The percent bonus liquidators get for liquidating"
+  liquidationIncentive: BigInt
+  "Address of price oracle the comptroller uses"
+  priceOracle: Bytes
 }
 
 """
@@ -87,6 +74,28 @@ type Market @entity {
 Account is an ETH address, with a list of all cToken markets the account has
 participated in, along with liquidation information.
 """
+type ComptrollerAccount @entity {
+    "User ETH address"
+    id: ID!
+    "Array of Fuse pools the user is in"
+    pools: [ComptrollerAccountFusePool!]! @derivedFrom(field: "comptrollerAccount")
+    "Address of price oracle the comptroller uses"
+    priceOracle: Bytes
+    "Factor used to determine repayAmount for liquidating"
+    closeFactor: BigInt
+    "The percent bonus liquidators get for liquidating"
+    liquidationIncentive: BigInt
+    "Max assets a single user can enter"
+    maxAssets: BigInt
+
+    # We can add more fields to this entity.
+    # See `Account` entity for examples of what additional fields to add.
+}
+
+"""
+Account is an ETH address, with a list of all cToken markets the account has
+participated in, along with liquidation information.
+"""
 type Account @entity {
     "User ETH address"
     id: ID!
@@ -110,6 +119,36 @@ type Account @entity {
     # "Total assets borrowed from user"
     # totalCollateralValueInEth: BigDecimal!
 }
+
+"""
+ComptrollerAccountFusePool is a single comptroller account within a single Fuse pool, with data such as ...
+"""
+type ComptrollerAccountFusePool @entity {
+    "Concatenation of Fuse pool address and user address"
+    id: ID!
+    "Relation to comptroller"
+    pool: FusePool!
+    "Name of the FusePool"
+    name: String!
+    "Relation to user"
+    comptrollerAccount: ComptrollerAccount!
+    "Transactions data"
+    transactions: [ComptrollerAccountFusePoolTransaction!]! @derivedFrom(field:"comptrollerAccount")
+    "Block number this asset was updated at in the contract"
+    accrualBlockNumber: BigInt!
+    "Address of price oracle the comptroller uses"
+    priceOracle: Bytes
+    "Factor used to determine repayAmount for liquidating"
+    closeFactor: BigInt
+    "The percent bonus liquidators get for liquidating"
+    liquidationIncentive: BigInt
+    "Max assets a single user can enter"
+    maxAssets: BigInt
+    
+    # Fields that are a part of the `AccountCToken` entity that were not 
+    # mirrored in this entity can be found in the `AccountCToken` entity.
+}
+
 
 """
 AccountCToken is a single account within a single cToken market, with data such
@@ -160,6 +199,23 @@ type AccountCToken @entity {
 
     # lifetimeBorrowInterestAccrued: BigDecimal!
     # FORMULA: lifetimeBorrowInterestAccrued = borrowBalanceUnderlying - totalUnderlyingBorrowed + totalUnderlyingRepaid
+}
+
+"""
+Auxiliary entity for AccountCToken
+"""
+type ComptrollerAccountFusePoolTransaction @entity {
+  id: ID!
+
+  comptrollerAccount: ComptrollerAccountFusePool!
+
+  tx_hash: Bytes!
+
+  timestamp: BigInt!
+
+  block: BigInt!
+
+  logIndex: BigInt!
 }
 
 """
