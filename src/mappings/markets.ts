@@ -2,13 +2,12 @@
 
 // For each division by 10, add one to exponent to truncate one significant figure
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
-import { Market, FusePool } from '../types/schema'
-// PriceOracle is valid from Comptroller deployment until block 8498421
+import { Market } from '../types/schema'
 import { PriceOracle } from '../types/templates/CToken/PriceOracle'
-// PriceOracle2 is valid from 8498422 until present block (until another proxy upgrade)
 import { MasterPriceOracle } from '../types/templates/CToken/MasterPriceOracle'
 import { ERC20 } from '../types/templates/CToken/ERC20'
 import { CToken } from '../types/templates/CToken/CToken'
+import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
 import {
   exponentToBigDecimal,
@@ -29,8 +28,7 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  let comptroller = FusePool.load('1')
-  let oracleAddress = comptroller.priceOracle as Address
+  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let underlyingPrice: BigDecimal
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
 
@@ -78,8 +76,7 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUSDCpriceETH(blockNumber: i32): BigDecimal {
-  let comptroller = FusePool.load('1')
-  let oracleAddress = comptroller.priceOracle as Address
+  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
   let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
   let usdPrice: BigDecimal
@@ -121,9 +118,6 @@ export function createMarket(marketAddress: string): Market {
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
-    /**
-     * @TODO Refactor this `createMarket()` method to use `FusePool`.
-     */
     market.underlyingAddress = contract.underlying()
 
     let underlyingContract = ERC20.bind(market.underlyingAddress as Address),
@@ -181,8 +175,7 @@ export function createMarket(marketAddress: string): Market {
 
 // Only to be used after block 10678764, since it's aimed to fix the change to USD based price oracle.
 function getETHinUSD(blockNumber: i32): BigDecimal {
-  let comptroller = FusePool.load('1')
-  let oracleAddress = comptroller.priceOracle as Address
+  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let oracle = MasterPriceOracle.bind(oracleAddress)
   let ethPriceInUSD = oracle
     .getUnderlyingPrice(Address.fromString(cETHAddress))
