@@ -10,8 +10,7 @@ dataSources:
     source:
       address: '0x835482FE0532f169024d5E9410199369aAD5C77E'
       abi: FusePoolDirectory
-      startBlock: 12059666
-      # startBlock: 12_674_533
+      startBlock: 12039666
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -115,24 +114,3 @@ templates:
           handler: handleTransfer
         - event: NewMarketInterestRateModel(address,address)
           handler: handleNewMarketInterestRateModel
-
-  # - kind: ethereum/contract
-  #   name: FusePoolDirectory
-  #   network: mainnet
-  #   source:
-  #     address: '0xc23C0C319deeED98B15BA1AFE6711e2bb6e2c33'
-  #     abi: FusePoolDirectory
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.4
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - FusePool
-  #     abis:
-  #       - name: FusePoolDirectory
-  #         file: ./abis/FusePoolDirectory.json
-  #     eventHandlers:
-  #       - event: PoolRegistered(uint256,FusePool)
-  #         handler: handlePoolRegistered # need to implement handler in mapping.ts
-  #     file: ./src/mapping.ts
-
