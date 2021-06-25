@@ -2,7 +2,7 @@
 
 // For each division by 10, add one to exponent to truncate one significant figure
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
-import { Market, Comptroller } from '../types/schema'
+import { Market, FusePool } from '../types/schema'
 // PriceOracle is valid from Comptroller deployment until block 8498421
 import { PriceOracle } from '../types/templates/CToken/PriceOracle'
 // PriceOracle2 is valid from 8498422 until present block (until another proxy upgrade)
@@ -29,7 +29,7 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  let comptroller = Comptroller.load('1')
+  let comptroller = FusePool.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
@@ -78,7 +78,7 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUSDCpriceETH(blockNumber: i32): BigDecimal {
-  let comptroller = Comptroller.load('1')
+  let comptroller = FusePool.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
   let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
@@ -125,11 +125,24 @@ export function createMarket(marketAddress: string): Market {
      * @TODO Refactor this `createMarket()` method to use `FusePool`.
      */
     market.underlyingAddress = contract.underlying()
-    let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
-    market.underlyingDecimals = underlyingContract.decimals()
+
+    let underlyingContract = ERC20.bind(market.underlyingAddress as Address),
+      _decimals = underlyingContract.try_decimals(),
+      noDecimals = 0,
+      _name = underlyingContract.try_name(),
+      _symbol = underlyingContract.try_symbol()
+
+    _decimals.reverted
+      ? market.underlyingDecimals = noDecimals
+      : market.underlyingDecimals = _decimals.value
+
     if (market.underlyingAddress.toHexString() != daiAddress) {
-      market.underlyingName = underlyingContract.name()
-      market.underlyingSymbol = underlyingContract.symbol()
+      _name.reverted
+        ? market.underlyingName = "no name detected"
+        : market.underlyingName = _name.value
+      _symbol.reverted
+        ? market.underlyingSymbol = "NONE"
+        : market.underlyingSymbol = _symbol.value
     } else {
       market.underlyingName = 'Dai Stablecoin v1.0 (DAI)'
       market.underlyingSymbol = 'DAI'
@@ -168,7 +181,7 @@ export function createMarket(marketAddress: string): Market {
 
 // Only to be used after block 10678764, since it's aimed to fix the change to USD based price oracle.
 function getETHinUSD(blockNumber: i32): BigDecimal {
-  let comptroller = Comptroller.load('1')
+  let comptroller = FusePool.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let oracle = MasterPriceOracle.bind(oracleAddress)
   let ethPriceInUSD = oracle

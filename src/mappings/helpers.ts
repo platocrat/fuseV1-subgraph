@@ -3,12 +3,13 @@
 // For each division by 10, add one to exponent to truncate one significant figure
 import { BigDecimal, BigInt, Bytes, Address } from '@graphprotocol/graph-ts'
 import {
-  Comptroller as Comptroller_Type,
   AccountCToken,
   Account,
-  AccountCTokenTransaction
+  AccountCTokenTransaction,
+  ComptrollerAccount,
+  ComptrollerAccountFusePool,
+  ComptrollerAccountFusePoolTransaction
 } from '../types/schema'
-import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
 export function exponentToBigDecimal(decimals: i32): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -46,6 +47,25 @@ export function createAccountCToken(
   return cTokenStats
 }
 
+export function createComptrollerAccountFusePool(
+  fusePoolStatsID: string,
+  poolName: string,
+  comptrollerAccount: string,
+  fusePoolID: string,
+): ComptrollerAccountFusePool {
+  let fusePoolStats = new ComptrollerAccountFusePool(fusePoolStatsID)
+  fusePoolStats.name = poolName
+  fusePoolStats.pool = fusePoolID
+  fusePoolStats.comptrollerAccount = comptrollerAccount
+  fusePoolStats.accrualBlockNumber = BigInt.fromI32(0)
+  fusePoolStats.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
+  fusePoolStats.closeFactor = BigInt.fromI32(0)
+  fusePoolStats.liquidationIncentive = BigInt.fromI32(0)
+  fusePoolStats.maxAssets = BigInt.fromI32(0)
+
+  return fusePoolStats
+}
+
 export function createAccount(accountID: string): Account {
   let account = new Account(accountID)
   account.countLiquidated = 0
@@ -53,6 +73,19 @@ export function createAccount(accountID: string): Account {
   account.hasBorrowed = false
   account.save()
   return account
+}
+
+export function createComptrollerAccount(comptrollerAccountID: string): ComptrollerAccount {
+  let comptrollerAccount = new ComptrollerAccount(comptrollerAccountID)
+
+  comptrollerAccount.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
+  comptrollerAccount.closeFactor = new BigInt(9)
+  comptrollerAccount.liquidationIncentive = new BigInt(9)
+  comptrollerAccount.maxAssets = new BigInt(9)
+
+  comptrollerAccount.save()
+
+  return comptrollerAccount
 }
 
 export function updateCommonCTokenStats(
@@ -80,10 +113,33 @@ export function updateCommonCTokenStats(
   return cTokenStats as AccountCToken
 }
 
-export function getComptrollerIndex(comptrollerAddress: Address): string {
-  let comptroller = Comptroller.bind(comptrollerAddress)
+export function updateCommonFusePoolStats(
+  poolID: string,
+  poolName: string,
+  comptrollerAccountID: string,
+  tx_hash: Bytes,
+  timestamp: BigInt,
+  blockNumber: BigInt,
+  logIndex: BigInt
+): ComptrollerAccountFusePool {
+  let fusePoolStatsID = poolID.concat('-').concat(comptrollerAccountID)
+  let fusePoolStats = ComptrollerAccountFusePool.load(fusePoolStatsID)
 
-  return comptroller
+  if (fusePoolStats == null) {
+    fusePoolStats = createComptrollerAccountFusePool(fusePoolStatsID, poolName, comptrollerAccountID, poolID)
+  }
+
+  getOrCreateComptrollerAccountFusePoolTransaction(
+    fusePoolStatsID,
+    tx_hash,
+    timestamp,
+    blockNumber,
+    logIndex
+  )
+
+  fusePoolStats.accrualBlockNumber = blockNumber
+
+  return fusePoolStats as ComptrollerAccountFusePool
 }
 
 export function getOrCreateAccountCTokenTransaction(
@@ -111,4 +167,32 @@ export function getOrCreateAccountCTokenTransaction(
   }
 
   return transaction as AccountCTokenTransaction
+}
+
+export function getOrCreateComptrollerAccountFusePoolTransaction(
+  comptrollerAccountID: string,
+  tx_hash: Bytes,
+  timestamp: BigInt,
+  block: BigInt,
+  logIndex: BigInt,
+): ComptrollerAccountFusePoolTransaction {
+  let id = comptrollerAccountID
+    .concat('-')
+    .concat(tx_hash.toHexString())
+    .concat('-')
+    .concat(logIndex.toString())
+  let transaction = ComptrollerAccountFusePoolTransaction.load(id)
+
+  if (transaction == null) {
+    transaction = new ComptrollerAccountFusePoolTransaction(id)
+    transaction.comptrollerAccount = comptrollerAccountID
+    transaction.tx_hash = tx_hash
+    transaction.timestamp = timestamp
+    transaction.block = block
+    transaction.logIndex = logIndex
+
+    transaction.save()
+  }
+
+  return transaction as ComptrollerAccountFusePoolTransaction
 }

@@ -6,14 +6,22 @@ import {
   NewCloseFactor,
   NewCollateralFactor,
   NewLiquidationIncentive,
-  // NewMaxAssets,
+  NewBorrowCap, // not implemented
+  NewBorrowCapGuardian, // not implemented
+  NewPauseGuardian, // not implemented
   NewPriceOracle,
-  MarketListed,
+  MarketListed
 } from '../types/Comptroller/Comptroller'
 
 import { CToken } from '../types/templates'
-import { Market, Comptroller, Account } from '../types/schema'
-import { mantissaFactorBD, updateCommonCTokenStats, createAccount, getComptrollerIndex } from './helpers'
+import { Market, Account, FusePool, ComptrollerAccount } from '../types/schema'
+import {
+  mantissaFactorBD,
+  updateCommonCTokenStats,
+  createAccount,
+  createComptrollerAccount,
+  updateCommonFusePoolStats
+} from './helpers'
 import { createMarket } from './markets'
 
 export function handleMarketListed(event: MarketListed): void {
@@ -77,10 +85,32 @@ export function handleMarketExited(event: MarketExited): void {
 }
 
 export function handleNewCloseFactor(event: NewCloseFactor): void {
-  let comptroller = Comptroller.load('0')
-  comptroller.closeFactor = event.params.newCloseFactorMantissa
-  comptroller.id = '0'
-  comptroller.save()
+  let comptrollerAddress = event.address
+  let comptrollerID = comptrollerAddress.toHexString()
+  let fusePool = FusePool.load(comptrollerID)
+
+  if (fusePool != null) {
+    let comptrollerID = event.address.toHex()
+    let comptroller = ComptrollerAccount.load(comptrollerID)
+
+    if (comptroller != null) {
+      createComptrollerAccount(comptrollerID)
+    }
+
+    let fusePoolStats = updateCommonFusePoolStats(
+      fusePool.id,
+      fusePool.name,
+      comptroller.id,
+      event.transaction.hash,
+      event.block.timestamp,
+      event.block.number,
+      event.logIndex
+    )
+
+    fusePoolStats.closeFactor = event.params.newCloseFactorMantissa
+
+    fusePoolStats.save()
+  }
 }
 
 export function handleNewCollateralFactor(event: NewCollateralFactor): void {
@@ -96,26 +126,54 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
   }
 }
 
-// This should be the first event acccording to etherscan but it isn't.... price oracle is. weird
+// This should be the first event according to etherscan but it isn't.... price oracle is. weird
 export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): void {
-  let comptroller = Comptroller.load('0')
-  comptroller.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
-  comptroller.save()
+  let comptrollerAddress = event.address,
+    comptrollerID = comptrollerAddress.toHexString(),
+    fusePool = FusePool.load(comptrollerID)
+
+  if (fusePool != null) {
+    fusePool.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
+    fusePool.save()
+  }
 }
 
-/** @todo TODO --> MUST REPLACE WITH `handleNewPauseGuardian()` */
-// export function handleNewMaxAssets(event: NewMaxAssets): void {
-//   let comptroller = Comptroller.load('1')
-//   comptroller.maxAssets = event.params.newMaxAssets
+/** @todo Finish implementing these */
+// export function handleNewPauseGuardian(event: NewPauseGuardian): void {
+//   let comptrollerAddress = event.address,
+//     comptrollerID = comptrollerAddress.toString(),
+//     comptroller = FusePool.load(comptrollerID)
+
+//   comptroller.newPauseGuardian = event.params.newPauseGuardian
+//   comptroller.save()
+// }
+
+// export function handleNewBorrowCap(event: NewBorrowCap): void {
+//   let comptrollerAddress = event.address,
+//     comptrollerID = comptrollerAddress.toString(),
+//     comptroller = FusePool.load(comptrollerID)
+
+//   comptroller.newBorrowCap = event.params.newBorrowCap
+//   comptroller.save()
+// }
+
+// export function handleNewBorrowCapGuardian(event: NewBorrowCapGuardian): void {
+//   let comptrollerAddress = event.address,
+//     comptrollerID = comptrollerAddress.toString(),
+//     comptroller = FusePool.load(comptrollerID)
+
+//   comptroller.newBorrowCapGuardian = event.params.newBorrowCapGuardian
 //   comptroller.save()
 // }
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  let comptroller = Comptroller.load('0')
+  let comptrollerAddress = event.address,
+    comptrollerID = comptrollerAddress.toHexString(),
+    fusePool = FusePool.load(comptrollerID)
   // This is the first event used in this mapping, so we use it to create the entity
-  if (comptroller == null) {
-    comptroller = new Comptroller('0')
+  if (fusePool == null) {
+    fusePool = FusePool.load(comptrollerID)
   }
-  comptroller.priceOracle = event.params.newPriceOracle
-  comptroller.save()
+  fusePool.priceOracle = event.params.newPriceOracle
+  fusePool.save()
 }

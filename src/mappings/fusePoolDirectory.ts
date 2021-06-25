@@ -1,10 +1,8 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
-
 import {
   PoolRegistered,
   // OwnershipTransferred
 } from '../types/FusePoolDirectory/FusePoolDirectory'
-
 import { Comptroller } from '../types/templates'
 import { FusePool } from '../types/schema'
 import { createPool } from './fusePools'
