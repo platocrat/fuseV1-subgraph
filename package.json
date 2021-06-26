@@ -7,7 +7,9 @@
     "url": "https://github.com/platocrat/fuse-subgraph.git"
   },
   "scripts": {
-    "compile": "npx truffle compile",
+    "compile-cp": "npx truffle compile --config truffle-config-cp.js",
+    "compile-fuse": "npx truffle compile --config truffle-config-fuse.js",
+    "compile": "npm run compile-cp && npm run compile-fuse",
     "build-contract": "solc contracts/Gravity.sol --abi -o abis --overwrite && solc contracts/Gravity.sol --bin -o bin --overwrite",
     "create": "graph create platocrat/fuse-subgraph --node https://api.thegraph.com/deploy/",
     "create-local": "graph create platocrat/fuse-subgraph --node http://127.0.0.1:8020",

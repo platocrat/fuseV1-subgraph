@@ -1,38 +1,379 @@
-[
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isPriceOracle",
-    "outputs": [
+{
+  "contractName": "PriceOracle",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract CToken",
+          "name": "cToken",
+          "type": "address"
+        }
+      ],
+      "name": "getUnderlyingPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract CToken\",\"name\":\"cToken\",\"type\":\"address\"}],\"name\":\"getUnderlyingPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"getUnderlyingPrice(address)\":{\"params\":{\"cToken\":\"The cToken to get the underlying price of\"},\"returns\":{\"_0\":\"The underlying asset price mantissa (scaled by 1e18).  Zero means the price is unavailable.\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getUnderlyingPrice(address)\":{\"notice\":\"Get the underlying price of a cToken asset\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/PriceOracle.sol\":\"PriceOracle\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/CToken.sol\":{\"keccak256\":\"0xf84d90c30c5c7f94a3b29aaa4cccd6a7e4da7a93c5838539959fb836a7879c38\",\"urls\":[\"bzz-raw://b3c8a39ea3b7a7d6c623c83945fcff04cbda07c845d40b4284a47e68fd0e10b6\",\"dweb:/ipfs/QmQeQcwx7DNTT6J3HLY2J5iFLuk5CTbV4z24hqATBZrm5K\"]},\"/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/PriceOracle.sol\":{\"keccak256\":\"0xa1648c78f475e210e60b2841e2c610c5028e5572a9bd5df095e01314d569b5d8\",\"urls\":[\"bzz-raw://0d026c6c51b0a2958853b9d15af61ff4082c5eaba693fd6d61fabc87109cdf5a\",\"dweb:/ipfs/QmdTBbJ9rrAKMe8T9GXv6UBxv2z7BUFmQUv7WmDwmFBdxm\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/**\n * Copyright 2020 Compound Labs, Inc.\n * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n */\n\npragma solidity 0.6.12;\n\nimport \"./CToken.sol\";\n\ninterface PriceOracle {\n    /**\n      * @notice Get the underlying price of a cToken asset\n      * @param cToken The cToken to get the underlying price of\n      * @return The underlying asset price mantissa (scaled by 1e18).\n      *  Zero means the price is unavailable.\n      */\n    function getUnderlyingPrice(CToken cToken) external view returns (uint);\n}\n",
+  "sourcePath": "/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/PriceOracle.sol",
+  "ast": {
+    "absolutePath": "/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/PriceOracle.sol",
+    "exportedSymbols": {
+      "PriceOracle": [
+        935
+      ]
+    },
+    "id": 936,
+    "license": null,
+    "nodeType": "SourceUnit",
+    "nodes": [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
+        "id": 925,
+        "literals": [
+          "solidity",
+          "0.6",
+          ".12"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "1486:23:3"
+      },
+      {
+        "absolutePath": "/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/CToken.sol",
+        "file": "./CToken.sol",
+        "id": 926,
+        "nodeType": "ImportDirective",
+        "scope": 936,
+        "sourceUnit": 779,
+        "src": "1511:22:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 935,
+        "linearizedBaseContracts": [
+          935
+        ],
+        "name": "PriceOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": {
+              "id": 927,
+              "nodeType": "StructuredDocumentation",
+              "src": "1563:251:3",
+              "text": " @notice Get the underlying price of a cToken asset\n @param cToken The cToken to get the underlying price of\n @return The underlying asset price mantissa (scaled by 1e18).\n  Zero means the price is unavailable."
+            },
+            "functionSelector": "fc57d4df",
+            "id": 934,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getUnderlyingPrice",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 930,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 929,
+                  "mutability": "mutable",
+                  "name": "cToken",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 934,
+                  "src": "1847:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_CToken_$778",
+                    "typeString": "contract CToken"
+                  },
+                  "typeName": {
+                    "contractScope": null,
+                    "id": 928,
+                    "name": "CToken",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 778,
+                    "src": "1847:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_CToken_$778",
+                      "typeString": "contract CToken"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1846:15:3"
+            },
+            "returnParameters": {
+              "id": 933,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 932,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 934,
+                  "src": "1885:4:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 931,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1885:4:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1884:6:3"
+            },
+            "scope": 935,
+            "src": "1819:72:3",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 936,
+        "src": "1535:358:3"
       }
     ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    "src": "1486:408:3"
   },
-  {
-    "constant": true,
-    "inputs": [
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/PriceOracle.sol",
+      "exportedSymbols": {
+        "PriceOracle": [
+          935
+        ]
+      },
+      "license": null
+    },
+    "children": [
       {
-        "internalType": "contract CToken",
-        "name": "cToken",
-        "type": "address"
+        "attributes": {
+          "literals": [
+            "solidity",
+            "0.6",
+            ".12"
+          ]
+        },
+        "id": 925,
+        "name": "PragmaDirective",
+        "src": "1486:23:3"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 779,
+          "absolutePath": "/Users/platocrat/Documents/GitHub/Rari-Capital/Rari-Capital/fuse-subgraph/contracts/fuse-contracts/external/compound/CToken.sol",
+          "file": "./CToken.sol",
+          "scope": 936,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 926,
+        "name": "ImportDirective",
+        "src": "1511:22:3"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            935
+          ],
+          "name": "PriceOracle",
+          "scope": 936
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "functionSelector": "fc57d4df",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getUnderlyingPrice",
+              "overrides": null,
+              "scope": 935,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "text": " @notice Get the underlying price of a cToken asset\n @param cToken The cToken to get the underlying price of\n @return The underlying asset price mantissa (scaled by 1e18).\n  Zero means the price is unavailable."
+                },
+                "id": 927,
+                "name": "StructuredDocumentation",
+                "src": "1563:251:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "cToken",
+                      "overrides": null,
+                      "scope": 934,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "contract CToken",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "CToken",
+                          "referencedDeclaration": 778,
+                          "type": "contract CToken"
+                        },
+                        "id": 928,
+                        "name": "UserDefinedTypeName",
+                        "src": "1847:6:3"
+                      }
+                    ],
+                    "id": 929,
+                    "name": "VariableDeclaration",
+                    "src": "1847:13:3"
+                  }
+                ],
+                "id": 930,
+                "name": "ParameterList",
+                "src": "1846:15:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 934,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 931,
+                        "name": "ElementaryTypeName",
+                        "src": "1885:4:3"
+                      }
+                    ],
+                    "id": 932,
+                    "name": "VariableDeclaration",
+                    "src": "1885:4:3"
+                  }
+                ],
+                "id": 933,
+                "name": "ParameterList",
+                "src": "1884:6:3"
+              }
+            ],
+            "id": 934,
+            "name": "FunctionDefinition",
+            "src": "1819:72:3"
+          }
+        ],
+        "id": 935,
+        "name": "ContractDefinition",
+        "src": "1535:358:3"
       }
     ],
-    "name": "getUnderlyingPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+    "id": 936,
+    "name": "SourceUnit",
+    "src": "1486:408:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.1",
+  "updatedAt": "2021-06-26T18:23:49.916Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "getUnderlyingPrice(address)": {
+        "params": {
+          "cToken": "The cToken to get the underlying price of"
+        },
+        "returns": {
+          "_0": "The underlying asset price mantissa (scaled by 1e18).  Zero means the price is unavailable."
+        }
       }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "getUnderlyingPrice(address)": {
+        "notice": "Get the underlying price of a cToken asset"
+      }
+    },
+    "version": 1
   }
-]
+}

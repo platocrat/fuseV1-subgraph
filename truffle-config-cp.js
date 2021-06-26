@@ -7,7 +7,6 @@ const mnemonicPhrase = "candy maple cake sugar pudding cream honey rich smooth c
 
 module.exports = {
   contracts_directory: "./contracts/compound-protocol", // for `version: '^0.5.16'`
-  // contracts_directory: "./contracts/fuse-contracts", // for `version: '^0.6.12'`
   networks: {
     development: {
       host: '127.0.0.1',
@@ -27,7 +26,6 @@ module.exports = {
   compilers: {
     solc: {
       version: '^0.5.16', // for `contracts_directory: "./contracts/compound-protocol"`
-      // version: '^0.6.12', // for `contracts_directory: "./contracts/fuse-contracts"`
       settings: {
         optimizer: {
           enabled: true,
