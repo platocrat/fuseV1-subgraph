@@ -4,43 +4,60 @@ import {
   FusePoolDirectory__poolsResult,
   PoolRegistered
 } from '../types/FusePoolDirectory/FusePoolDirectory'
-import { FusePool, Comptroller } from '../types/schema'
+import { Pool } from '../types/schema'
+import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
 /**
  * @dev Creates FusePool entity
  * @param comptrollerAddress 
- * @returns fusePool A `FusePool` object
+ * @returns pool A `FusePool` object
  */
-export function createPool(_comptrollerAddress: string): FusePool {
-  let fusePool: FusePool,
+export function createPool(_comptrollerAddress: string): Pool {
+  let pool: Pool,
     comptrollerAddress: Address = Address.fromString(_comptrollerAddress)
 
   let contract = Comptroller.bind(comptrollerAddress)
   let admin = contract.try_admin()
 
-  fusePool = new FusePool(_comptrollerAddress)
+  pool = new Pool(_comptrollerAddress)
 
   admin.reverted // pool.value1
-    ? fusePool.creator = Address.fromString('0x0000000000000000000000000000000000000000')
-    : fusePool.creator = admin.value
+    ? pool.creator = Address.fromString('0x0000000000000000000000000000000000000000')
+    : pool.creator = admin.value
 
-  fusePool.id = contract._address.toHexString()
-  fusePool.comptroller = contract._address
-  fusePool.name = contract._name
-  fusePool.blockPosted = BigInt.fromString('0')
-  fusePool.timestampPosted = BigInt.fromString('0')
+  pool.id = contract._address.toHexString()
+  pool.comptroller = contract._address
+  pool.name = contract._name
+  pool.blockPosted = BigInt.fromString('0')
+  pool.timestampPosted = BigInt.fromString('0')
 
-  return fusePool
+  return pool
 }
 
 export function updateFusePool(
   fusePoolAddress: Address,
   blockNumber: i32,
   blockTimestamp: i32
-): FusePool {
-  let fusePoolID = fusePoolAddress.toHexString()
-  let fusePool = FusePool.load(fusePoolID)
-  if (fusePool == null) {
-    fusePool = createPool(fusePoolID)
+): Pool {
+  let poolID = fusePoolAddress.toHexString()
+  let pool = Pool.load(poolID)
+  if (pool == null) {
+    pool = createPool(poolID)
   }
+
+  let contractAddress = Address.fromString(pool.id)
+  let contract = Comptroller.bind(contractAddress)
+
+  pool.name = contract._name
+  pool.comptroller = contract._address
+  pool.creator = contract.admin()
+  pool.closeFactor = contract.closeFactorMantissa()
+  pool.liquidationIncentive = contract.liquidationIncentiveMantissa()
+  pool.priceOracle = contract.oracle()
+  pool.id = contract._address.toHexString()
+
+  pool.save()
+
+  return pool as Pool
 }
+

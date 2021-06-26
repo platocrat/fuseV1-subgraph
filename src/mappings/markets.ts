@@ -28,7 +28,7 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
+  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let underlyingPrice: BigDecimal
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
 
@@ -76,7 +76,7 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUSDCpriceETH(blockNumber: i32): BigDecimal {
-  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
+  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
   let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
   let usdPrice: BigDecimal
@@ -175,7 +175,7 @@ export function createMarket(marketAddress: string): Market {
 
 // Only to be used after block 10678764, since it's aimed to fix the change to USD based price oracle.
 function getETHinUSD(blockNumber: i32): BigDecimal {
-  let oracleAddress = Address.fromHexString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
+  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
   let oracle = MasterPriceOracle.bind(oracleAddress)
   let ethPriceInUSD = oracle
     .getUnderlyingPrice(Address.fromString(cETHAddress))

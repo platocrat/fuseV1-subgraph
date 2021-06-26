@@ -6,9 +6,9 @@ import {
   AccountCToken,
   Account,
   AccountCTokenTransaction,
-  ComptrollerAccount,
-  ComptrollerAccountFusePool,
-  ComptrollerAccountFusePoolTransaction
+  Admin,
+  AdminFusePool,
+  AdminFusePoolTransaction
 } from '../types/schema'
 
 export function exponentToBigDecimal(decimals: i32): BigDecimal {
@@ -47,23 +47,21 @@ export function createAccountCToken(
   return cTokenStats
 }
 
-export function createComptrollerAccountFusePool(
-  fusePoolStatsID: string,
-  poolName: string,
-  comptrollerAccount: string,
-  fusePoolID: string,
-): ComptrollerAccountFusePool {
-  let fusePoolStats = new ComptrollerAccountFusePool(fusePoolStatsID)
-  fusePoolStats.name = poolName
-  fusePoolStats.pool = fusePoolID
-  fusePoolStats.comptrollerAccount = comptrollerAccount
-  fusePoolStats.accrualBlockNumber = BigInt.fromI32(0)
-  fusePoolStats.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
-  fusePoolStats.closeFactor = BigInt.fromI32(0)
-  fusePoolStats.liquidationIncentive = BigInt.fromI32(0)
-  fusePoolStats.maxAssets = BigInt.fromI32(0)
+export function createAdminFusePool(
+  poolStatsID: string,
+  admin: string,
+  poolID: string,
+): AdminFusePool {
+  let poolStats = new AdminFusePool(poolStatsID)
+  poolStats.pool = poolID
+  poolStats.admin = admin
+  poolStats.accrualBlockNumber = BigInt.fromI32(0)
+  poolStats.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
+  poolStats.closeFactor = BigInt.fromI32(0)
+  poolStats.liquidationIncentive = BigInt.fromI32(0)
+  poolStats.maxAssets = BigInt.fromI32(0)
 
-  return fusePoolStats
+  return poolStats
 }
 
 export function createAccount(accountID: string): Account {
@@ -75,17 +73,17 @@ export function createAccount(accountID: string): Account {
   return account
 }
 
-export function createComptrollerAccount(comptrollerAccountID: string): ComptrollerAccount {
-  let comptrollerAccount = new ComptrollerAccount(comptrollerAccountID)
+export function createAdmin(adminID: string): Admin {
+  let admin = new Admin(adminID)
 
-  comptrollerAccount.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
-  comptrollerAccount.closeFactor = new BigInt(9)
-  comptrollerAccount.liquidationIncentive = new BigInt(9)
-  comptrollerAccount.maxAssets = new BigInt(9)
+  admin.priceOracle = Address.fromString('0x0000000000000000000000000000000000000000')
+  admin.closeFactor = new BigInt(9)
+  admin.liquidationIncentive = new BigInt(9)
+  admin.maxAssets = new BigInt(9)
 
-  comptrollerAccount.save()
+  admin.save()
 
-  return comptrollerAccount
+  return admin
 }
 
 export function updateCommonCTokenStats(
@@ -113,33 +111,32 @@ export function updateCommonCTokenStats(
   return cTokenStats as AccountCToken
 }
 
-export function updateCommonFusePoolStats(
+export function updateCommonPoolStats(
   poolID: string,
-  poolName: string,
-  comptrollerAccountID: string,
+  adminID: string,
   tx_hash: Bytes,
   timestamp: BigInt,
   blockNumber: BigInt,
   logIndex: BigInt
-): ComptrollerAccountFusePool {
-  let fusePoolStatsID = poolID.concat('-').concat(comptrollerAccountID)
-  let fusePoolStats = ComptrollerAccountFusePool.load(fusePoolStatsID)
+): AdminFusePool {
+  let poolStatsID = poolID.concat('-').concat(adminID)
+  let poolStats = AdminFusePool.load(poolStatsID)
 
-  if (fusePoolStats == null) {
-    fusePoolStats = createComptrollerAccountFusePool(fusePoolStatsID, poolName, comptrollerAccountID, poolID)
+  if (poolStats == null) {
+    poolStats = createAdminFusePool(poolStatsID, adminID, poolID)
   }
 
-  getOrCreateComptrollerAccountFusePoolTransaction(
-    fusePoolStatsID,
+  getOrCreateAdminFusePoolTransaction(
+    poolStatsID,
     tx_hash,
     timestamp,
     blockNumber,
     logIndex
   )
 
-  fusePoolStats.accrualBlockNumber = blockNumber
+  poolStats.accrualBlockNumber = blockNumber
 
-  return fusePoolStats as ComptrollerAccountFusePool
+  return poolStats as AdminFusePool
 }
 
 export function getOrCreateAccountCTokenTransaction(
@@ -169,23 +166,23 @@ export function getOrCreateAccountCTokenTransaction(
   return transaction as AccountCTokenTransaction
 }
 
-export function getOrCreateComptrollerAccountFusePoolTransaction(
-  comptrollerAccountID: string,
+export function getOrCreateAdminFusePoolTransaction(
+  adminID: string,
   tx_hash: Bytes,
   timestamp: BigInt,
   block: BigInt,
   logIndex: BigInt,
-): ComptrollerAccountFusePoolTransaction {
-  let id = comptrollerAccountID
+): AdminFusePoolTransaction {
+  let id = adminID
     .concat('-')
     .concat(tx_hash.toHexString())
     .concat('-')
     .concat(logIndex.toString())
-  let transaction = ComptrollerAccountFusePoolTransaction.load(id)
+  let transaction = AdminFusePoolTransaction.load(id)
 
   if (transaction == null) {
-    transaction = new ComptrollerAccountFusePoolTransaction(id)
-    transaction.comptrollerAccount = comptrollerAccountID
+    transaction = new AdminFusePoolTransaction(id)
+    transaction.admin = adminID
     transaction.tx_hash = tx_hash
     transaction.timestamp = timestamp
     transaction.block = block
@@ -194,5 +191,5 @@ export function getOrCreateComptrollerAccountFusePoolTransaction(
     transaction.save()
   }
 
-  return transaction as ComptrollerAccountFusePoolTransaction
+  return transaction as AdminFusePoolTransaction
 }

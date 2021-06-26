@@ -1,5 +1,5 @@
 {
-  "contractName": "CErc20",
+  "contractName": "CToken",
   "abi": [
     {
       "anonymous": false,
