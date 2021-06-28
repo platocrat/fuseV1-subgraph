@@ -23,6 +23,7 @@ import {
   updateCommonPoolStats
 } from './helpers'
 import { createMarket, updateMarket } from './markets'
+import { updatePool } from './fusePools'
 
 export function handleMarketListed(event: MarketListed): void {
   // Dynamically index all new listed tokens
@@ -85,30 +86,9 @@ export function handleMarketExited(event: MarketExited): void {
 }
 
 export function handleNewCloseFactor(event: NewCloseFactor): void {
-  let poolAddress = event.address
-  let poolID = poolAddress.toHexString()
-  let pool = Pool.load(poolID)
-
-  if (pool != null) {
-    let poolID = event.address.toHex()
-    let pool = Admin.load(poolID)
-
-    if (pool != null) {
-      createAdmin(poolID)
-    }
-
-    let poolStats = updateCommonPoolStats(
-      pool.id,
-      pool.id,
-      event.transaction.hash,
-      event.block.timestamp,
-      event.block.number,
-      event.logIndex
-    )
-
-    poolStats.closeFactor = event.params.newCloseFactorMantissa
-    poolStats.save()
-  }
+  let pool = Pool.load('1')
+  pool.closeFactor = event.params.newCloseFactorMantissa
+  pool.save()
 }
 
 export function handleNewCollateralFactor(event: NewCollateralFactor): void {
@@ -126,52 +106,18 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
 
 // This should be the first event according to etherscan but it isn't.... price oracle is. weird
 export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): void {
-  let poolAddress = event.address,
-    poolID = poolAddress.toHexString(),
-    pool = Pool.load(poolID)
-
-  if (pool != null) {
-    pool.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
-    pool.save()
-  }
+  let pool = Pool.load('1')
+  pool.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
+  pool.save()
 }
 
-/** @todo Finish implementing these */
-// export function handleNewPauseGuardian(event: NewPauseGuardian): void {
-//   let poolAddress = event.address,
-//     poolID = poolAddress.toString(),
-//     pool = Pool.load(poolID)
-
-//   pool.newPauseGuardian = event.params.newPauseGuardian
-//   pool.save()
-// }
-
-// export function handleNewBorrowCap(event: NewBorrowCap): void {
-//   let poolAddress = event.address,
-//     poolID = poolAddress.toString(),
-//     pool = Pool.load(poolID)
-
-//   pool.newBorrowCap = event.params.newBorrowCap
-//   pool.save()
-// }
-
-// export function handleNewBorrowCapGuardian(event: NewBorrowCapGuardian): void {
-//   let poolAddress = event.address,
-//     poolID = poolAddress.toString(),
-//     pool = Pool.load(poolID)
-
-//   pool.newBorrowCapGuardian = event.params.newBorrowCapGuardian
-//   pool.save()
-// }
-
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  let poolAddress = event.address,
-    poolID = poolAddress.toHexString(),
-    pool = Pool.load(poolID)
+  let poolID = event.address.toHexString(),
+    pool = Pool.load('1')
 
   // This is the first event used in this mapping, so we use it to create the entity
   if (pool == null) {
-    pool = Pool.load(poolID)
+    pool = new Pool('1')
   }
   pool.priceOracle = event.params.newPriceOracle
   pool.save()
