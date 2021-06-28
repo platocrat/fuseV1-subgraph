@@ -34,10 +34,15 @@ export function createPool(_comptrollerAddress: string): Pool {
   return pool
 }
 
-export function updateFusePool(
-  fusePoolAddress: Address,
-  blockNumber: i32,
-  blockTimestamp: i32
+/**
+ * @todo NEED TO CORRECT HOW THIS IS CALLED IN `comptroller.ts`!
+ * @param fusePoolAddress 
+ * @returns 
+ */
+export function updatePool(
+  fusePoolAddress: Address
+  // blockNumber: i32,
+  // blockTimestamp: i32
 ): Pool {
   let poolID = fusePoolAddress.toHexString()
   let pool = Pool.load(poolID)
@@ -55,6 +60,7 @@ export function updateFusePool(
   pool.liquidationIncentive = contract.liquidationIncentiveMantissa()
   pool.priceOracle = contract.oracle()
   pool.id = contract._address.toHexString()
+  pool.maxAssets = contract.maxAssets()
 
   pool.save()
 
