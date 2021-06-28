@@ -234,9 +234,13 @@ export function updateMarket(
           market.underlyingAddress as Address,
           market.underlyingDecimals,
         )
-        market.underlyingPrice = tokenPriceUSD
-          .div(ethPriceInUSD)
-          .truncate(market.underlyingDecimals)
+
+        ethPriceInUSD == BigDecimal.fromString('0')
+          ? market.underlyingPrice = BigDecimal.fromString('0')
+          : market.underlyingPrice = tokenPriceUSD
+            .div(ethPriceInUSD)
+            .truncate(market.underlyingDecimals)
+
         // if USDC, we only update ETH price
         if (market.id != cUSDCAddress) {
           market.underlyingPriceUSD = tokenPriceUSD.truncate(market.underlyingDecimals)

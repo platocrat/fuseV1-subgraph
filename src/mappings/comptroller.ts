@@ -86,9 +86,29 @@ export function handleMarketExited(event: MarketExited): void {
 }
 
 export function handleNewCloseFactor(event: NewCloseFactor): void {
-  let pool = Pool.load('1')
-  pool.closeFactor = event.params.newCloseFactorMantissa
-  pool.save()
+  let poolID = event.address.toHexString()
+  let pool = Pool.load(poolID)
+
+  if (pool != null) {
+    pool = updatePool(event.address)
+
+    let poolStats = updateCommonPoolStats(
+      pool.id,
+      pool.id,
+      event.transaction.hash,
+      event.block.timestamp,
+      event.block.number,
+      event.logIndex
+    )
+
+    pool.closeFactor = event.params.newCloseFactorMantissa
+    pool.name = pool.name
+    poolStats.closeFactor = event.params.newCloseFactorMantissa
+    poolStats.name = pool.name
+
+    pool.save()
+    poolStats.save()
+  }
 }
 
 export function handleNewCollateralFactor(event: NewCollateralFactor): void {
@@ -106,18 +126,49 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
 
 // This should be the first event according to etherscan but it isn't.... price oracle is. weird
 export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): void {
-  let pool = Pool.load('1')
-  pool.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
-  pool.save()
+  let poolID = event.address.toHexString(),
+    pool = Pool.load(poolID)
+
+  if (pool != null) {
+    pool = updatePool(event.address)
+
+    let poolStats = updateCommonPoolStats(
+      pool.id,
+      pool.id,
+      event.transaction.hash,
+      event.block.timestamp,
+      event.block.number,
+      event.logIndex
+    )
+
+    pool.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
+    poolStats.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
+
+    pool.save()
+    poolStats.save()
+  }
 }
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  let poolID = event.address.toHexString(),
-    pool = Pool.load('1')
+  let poolAddress = event.address,
+    poolID = poolAddress.toHexString(),
+    pool = Pool.load(poolID)
 
   // This is the first event used in this mapping, so we use it to create the entity
   if (pool == null) {
-    pool = new Pool('1')
+    pool = new Pool(poolID)
+  } else {
+    let poolStats = updateCommonPoolStats(
+      pool.id,
+      pool.id,
+      event.transaction.hash,
+      event.block.timestamp,
+      event.block.number,
+      event.logIndex
+    )
+
+    poolStats.priceOracle = event.params.newPriceOracle
+    poolStats.save()
   }
   pool.priceOracle = event.params.newPriceOracle
   pool.save()
