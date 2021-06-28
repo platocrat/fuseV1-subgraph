@@ -4,7 +4,6 @@ Pool stores all high level variables for a Comptroller's Fuse pool
 type Pool @entity {
     "Same as `comptroller` field to allow for dynamic loading of FusePool entities"
     id: ID!
-
     # Fields that match Rari's Fuse pool API
     "Name of the Fuse pool"
     name: String!
@@ -16,12 +15,6 @@ type Pool @entity {
     blockPosted: BigInt!
     "Block timestamp of when the tx, to create the Fuse pool, was first included"
     timestampPosted: BigInt!
-
-    # Fields that are not in Rari's api
-    "Block the market is updated to"
-    blockNumber: Int!
-    "Timestamp the market was most recently updated"
-    blockTimestamp: Int!
     "Address of price oracle the comptroller uses"
     priceOracle: Bytes
     "Factor used to determine repayAmount for liquidating"
