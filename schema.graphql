@@ -25,22 +25,6 @@ type Pool @entity {
     maxAssets: BigInt
 }
 
-# """
-# The Comptroller type has protocol level variables stored
-# """
-# type Comptroller @entity {
-#     "ID is set to 1"
-#     id: ID!
-#     "Address of price oracle the comptroller uses"
-#     priceOracle: Bytes
-#     "Factor used to determine repayAmount for liquidating"
-#     closeFactor: BigInt
-#     "The percent bonus liquidators get for liquidating"
-#     liquidationIncentive: BigInt
-#     "Max assets a single user can enter"
-#     maxAssets: BigInt
-# }
-
 """
 Market stores all high level variables for a cToken market
 """
