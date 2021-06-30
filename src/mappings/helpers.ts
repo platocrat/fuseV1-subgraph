@@ -13,10 +13,14 @@ import {
   Pool
 } from '../types/schema'
 
-let ONE_e18_BD = BigInt.fromI32(1)
-let smallBigDecimalString = BigInt.fromString('0.01')
+export const secondsInFourDays = 4 * 60 * 24
+export const apr = 2372500
 
-let ONE_e16_BD = ONE_e18_BD.minus(smallBigDecimalString)
+export let fixed18 = BigInt.fromI32(10).pow(18)
+export let fixed16 = BigInt.fromI32(10).pow(16)
+export let aprBI = BigInt.fromI32(apr)
+export let oneBI = BigInt.fromI32(1)
+export let secondsInFourDaysBI = BigInt.fromI32(secondsInFourDays)
 
 export function exponentToBigDecimal(decimals: i32): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -26,26 +30,25 @@ export function exponentToBigDecimal(decimals: i32): BigDecimal {
   return bd
 }
 
-
 export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigDecimal {
-  return mantissa
-    .div(ONE_e18_BD)
-    .times(BigInt.fromString('4'))
-    .times(BigInt.fromString('60'))
-    .times(BigInt.fromString('64'))
-    .plus(BigInt.fromString('1'))
-    .pow(dayRange as u8)
-    .minus(BigInt.fromString('1'))
-    .times(BigInt.fromString('100'))
+  let exp: u8 = dayRange as u8
+  let base: BigInt = mantissa
+    .div(fixed18)
+    .times(secondsInFourDaysBI)
+    .plus(oneBI)
+
+  return base
+    .pow(exp)
+    .minus(oneBI)
+    .times(BigInt.fromI32(100))
     .toBigDecimal()
   // return (Math.pow((mantissa / 1e18) * (4 * 60 * 24) + 1, dayRange) - 1) * 100;
 }
 
 export function convertMantissaToAPR(mantissa: BigInt): BigDecimal {
-  return mantissa
-    .times(BigInt.fromString('2372500'))
-    .div(ONE_e16_BD)
-    .toBigDecimal()
+  let numerator: BigInt = mantissa.times(aprBI)
+  let denominator = fixed16
+  return numerator.div(denominator).toBigDecimal()
   // return (mantissa.toI32() * 2372500) / 1e16;
 }
 
