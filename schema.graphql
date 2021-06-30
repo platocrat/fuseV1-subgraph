@@ -49,8 +49,9 @@ type Market @entity {
     reserves: BigDecimal!
     "Yearly supply rate. With 2104400 blocks per year"
     supplyRate: BigDecimal!
-
+    "Supply rate annual percent rate -- measures interest charged"
     supplyRateAPR: BigDecimal!
+    "Supply rate annual percent yield -- measures interest earned"
     supplyRateAPY: BigDecimal!
 
     "CToken symbol"

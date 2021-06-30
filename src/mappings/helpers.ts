@@ -25,27 +25,25 @@ export function exponentToBigDecimal(decimals: i32): BigDecimal {
 
 
 export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigDecimal {
-  dayRange.toString()
-
   return mantissa
     // .div(BigInt.fromString('1e18'))
-    .div(ONE_BI)
-    .times(BigInt.fromString('4'))
-    .times(BigInt.fromString('60'))
-    .times(BigInt.fromString('64'))
-    .plus(BigInt.fromString('1'))
-    .pow(dayRange as u8)
-    .minus(BigInt.fromString('1'))
-    .times(BigInt.fromString('100'))
+    // .div(ONE_BI)
+    // .times(BigInt.fromString('4'))
+    // .times(BigInt.fromString('60'))
+    // .times(BigInt.fromString('64'))
+    // .plus(BigInt.fromString('1'))
+    // .pow(dayRange as u8)
+    // .minus(BigInt.fromString('1'))
+    // .times(BigInt.fromString('100'))
     .toBigDecimal()
   // return (Math.pow( * (4 * 60 * 24) + 1, dayRange) - 1) * 100;
 }
 
 export function convertMantissaToAPR(mantissa: BigInt): BigDecimal {
   return mantissa
-    .times(BigInt.fromString('2372500'))
+    // .times(BigInt.fromString('2372500'))
     // .div(BigInt.fromString('1e16'))
-    .div(ONE_BI)
+    // .div(ONE_BI)
     .toBigDecimal()
   // return (mantissa.toI32() * 2372500) / 1e16;
 }
