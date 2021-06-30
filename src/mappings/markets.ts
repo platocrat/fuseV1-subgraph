@@ -182,11 +182,9 @@ export function createMarket(
     ? Address.fromString('0x0000000000000000000000000000000000000000')
     : interestRateModelAddress.value
 
-  if (contract.name().includes('Ethereum')) {
-    market.name = 'Ethereum'
-  } else {
-    market.name = contract.name()
-  }
+  market.name = contract.name()
+
+  if (contract.name().includes('Ethereum')) market.underlyingName = 'Ethereum'
 
   market.reserves = zeroBD
   market.supplyRate = zeroBD
