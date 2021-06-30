@@ -26,7 +26,7 @@ type Pool @entity {
     "Max assets a single user can enter"
     maxAssets: BigInt
     "All Markets (i.e CToken) that are in a Fuse pool"
-    markets: [Bytes!]! # @derivedFrom(field: "pool")
+    markets: [Market!]! # @derivedFrom(field: "pool")
 }
 
 """
@@ -86,9 +86,9 @@ type Market @entity {
     "Underlying token decimal length"
     underlyingDecimals: Int!
 
-    # # Relations for `Pool` entity...
-    # "Relation to the `Pool` entity"
-    # pool: Pool!
+    # Relations for `Pool` entity...
+    "Relation to the `Pool` entity"
+    pool: Pool!
 }
 
 """

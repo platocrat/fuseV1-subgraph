@@ -1,5 +1,9 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
+/* External imports */
+import { Address } from '@graphprotocol/graph-ts'
+
+/* Internal imports */
 import {
   MarketEntered,
   MarketExited,
@@ -12,8 +16,8 @@ import {
   NewPriceOracle,
   MarketListed
 } from '../types/Comptroller/Comptroller'
-
 import { CToken } from '../types/templates'
+import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 import { Market, Account, Pool, Admin } from '../types/schema'
 import {
   mantissaFactorBD,
@@ -23,13 +27,13 @@ import {
   updateCommonPoolStats
 } from './helpers'
 import { createMarket, updateMarket } from './markets'
-import { updatePool } from './fusePools'
+import { getAllMarketsInPool, updatePool } from './fusePools'
 
 export function handleMarketListed(event: MarketListed): void {
   // Dynamically index all new listed tokens
   CToken.create(event.params.cToken)
   // Create the market for this token, since it's now been listed.
-  let market = createMarket(event.params.cToken.toHexString())
+  let market = createMarket(event.params.cToken.toHexString(), event)
   market.save()
 }
 
@@ -102,8 +106,8 @@ export function handleNewCloseFactor(event: NewCloseFactor): void {
     )
 
     pool.closeFactor = event.params.newCloseFactorMantissa
-    pool.name = pool.name
     poolStats.closeFactor = event.params.newCloseFactorMantissa
+    pool.name = pool.name
     poolStats.name = pool.name
 
     pool.save()
@@ -120,6 +124,8 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
     market.collateralFactor = event.params.newCollateralFactorMantissa
       .toBigDecimal()
       .div(mantissaFactorBD)
+    market.pool = event.address.toHexString()
+
     market.save()
   }
 }
@@ -154,6 +160,8 @@ export function handleNewPriceOracle(event: NewPriceOracle): void {
     poolID = poolAddress.toHexString(),
     pool = Pool.load(poolID)
 
+  let contract = Comptroller.bind(poolAddress)
+
   // This is the first event used in this mapping, so we use it to create the entity
   if (pool == null) {
     pool = new Pool(poolID)
@@ -168,8 +176,11 @@ export function handleNewPriceOracle(event: NewPriceOracle): void {
     )
 
     poolStats.priceOracle = event.params.newPriceOracle
+    pool.markets = getAllMarketsInPool(contract)
+
     poolStats.save()
   }
   pool.priceOracle = event.params.newPriceOracle
+
   pool.save()
 }

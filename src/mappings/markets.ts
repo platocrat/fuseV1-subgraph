@@ -18,6 +18,7 @@ import {
   convertMantissaToAPY,
   convertMantissaToAPR,
 } from './helpers'
+import { MarketListed } from '../types/Comptroller/Comptroller'
 
 let cUSDCAddress = '0x39aa39c021dfbae8fac545936693ac917d5e7563'
 let cETHAddress = '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5'
@@ -116,7 +117,10 @@ function getUSDCpriceETH(blockNumber: i32): BigDecimal {
   return usdPrice
 }
 
-export function createMarket(marketAddress: string): Market {
+export function createMarket(
+  marketAddress: string,
+  marketListedEvent: MarketListed | null
+): Market {
   let market: Market
   let contract = CToken.bind(Address.fromString(marketAddress))
 
@@ -131,6 +135,7 @@ export function createMarket(marketAddress: string): Market {
     market.underlyingName = 'Ether'
     market.underlyingSymbol = 'ETH'
     market.underlyingPriceUSD = zeroBD
+    market.pool = marketListedEvent.address.toHexString()
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
@@ -162,6 +167,8 @@ export function createMarket(marketAddress: string): Market {
     if (marketAddress == cUSDCAddress) {
       market.underlyingPriceUSD = BigDecimal.fromString('1')
     }
+
+    market.pool = marketListedEvent.address.toHexString()
   }
 
   let interestRateModelAddress = contract.try_interestRateModel()
@@ -174,7 +181,13 @@ export function createMarket(marketAddress: string): Market {
   market.interestRateModelAddress = interestRateModelAddress.reverted
     ? Address.fromString('0x0000000000000000000000000000000000000000')
     : interestRateModelAddress.value
-  market.name = contract.name()
+
+  if (contract.name().includes('Ethereum')) {
+    market.name = 'Ethereum'
+  } else {
+    market.name = contract.name()
+  }
+
   market.reserves = zeroBD
   market.supplyRate = zeroBD
   market.supplyRateAPR = zeroBD
@@ -187,6 +200,8 @@ export function createMarket(marketAddress: string): Market {
   market.blockTimestamp = 0
   market.borrowIndex = zeroBD
   market.reserveFactor = reserveFactor.reverted ? BigInt.fromI32(0) : reserveFactor.value
+
+  market.pool = marketListedEvent.address.toHexString()
 
   return market
 }
@@ -215,14 +230,13 @@ export function updateMarket(
 ): Market {
   let marketID = marketAddress.toHexString()
   let market = Market.load(marketID)
-  if (market == null) {
-    market = createMarket(marketID)
-  }
 
   // Only updateMarket if it has not been updated this block
   if (market.accrualBlockNumber != blockNumber) {
     let contractAddress = Address.fromString(market.id)
     let contract = CToken.bind(contractAddress)
+
+    market.pool = contract._address.toHexString()
 
     // After block 10678764 price is calculated based on USD instead of ETH
     if (blockNumber > 10678764) {
@@ -247,7 +261,9 @@ export function updateMarket(
 
         // if USDC, we only update ETH price
         if (market.id != cUSDCAddress) {
-          market.underlyingPriceUSD = tokenPriceUSD.truncate(market.underlyingDecimals)
+          market.underlyingPriceUSD = tokenPriceUSD.truncate(
+            market.underlyingDecimals
+          )
         }
       }
     } else {
@@ -336,7 +352,6 @@ export function updateMarket(
       log.info('***CALL FAILED*** : cERC20 supplyRatePerBlock() reverted', [])
       market.supplyRate = zeroBD
     } else {
-
       market.supplyRate = supplyRatePerBlock.value
         .toBigDecimal()
         .times(BigDecimal.fromString('2102400'))
@@ -346,6 +361,7 @@ export function updateMarket(
       market.supplyRateAPY = convertMantissaToAPY(supplyRatePerBlock.value, 365)
       market.supplyRateAPR = convertMantissaToAPR(supplyRatePerBlock.value)
     }
+
     market.save()
   }
   return market as Market
