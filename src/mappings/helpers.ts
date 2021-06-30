@@ -31,14 +31,15 @@ export function exponentToBigDecimal(decimals: i32): BigDecimal {
 }
 
 export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigDecimal {
-  let exp: u8 = dayRange as u8
   let base: BigInt = mantissa
     .div(fixed18)
     .times(secondsInFourDaysBI)
     .plus(oneBI)
 
+  let exp = dayRange
+
   return base
-    .pow(exp)
+    .pow(5).pow(73)
     .minus(oneBI)
     .times(BigInt.fromI32(100))
     .toBigDecimal()

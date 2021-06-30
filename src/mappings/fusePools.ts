@@ -32,25 +32,20 @@ export function createPool(_comptrollerAddress: string, poolRegisteredEvent: Poo
   pool.name = contract._name
   pool.blockPosted = BigInt.fromString('0')
   pool.timestampPosted = BigInt.fromString('0')
+  pool.markets = contract.getAllMarkets()
 
   return pool
 }
 
 /**
- * @todo NEED TO CORRECT HOW THIS IS CALLED IN `comptroller.ts`!
  * @param fusePoolAddress 
- * @returns 
+ * @returns pool The Fuse pool at the given Comptroller address
  */
 export function updatePool(
   fusePoolAddress: Address
-  // blockNumber: i32,
-  // blockTimestamp: i32
 ): Pool {
   let poolID = fusePoolAddress.toHexString()
   let pool = Pool.load(poolID)
-  // if (pool == null) {
-  //   pool = createPool(poolID)
-  // }
 
   let contractAddress = Address.fromString(pool.id)
   let contract = Comptroller.bind(contractAddress)
@@ -62,6 +57,8 @@ export function updatePool(
   pool.liquidationIncentive = contract.liquidationIncentiveMantissa()
   pool.priceOracle = contract.oracle()
   pool.maxAssets = contract.maxAssets()
+
+  pool.markets = contract.getAllMarkets()
 
   pool.save()
 
