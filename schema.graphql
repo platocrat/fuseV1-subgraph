@@ -25,7 +25,8 @@ type Pool @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
-    # markets: [Market!]! @derivedFrom(field: "pool")
+    "All Markets (i.e CToken) that are in a Fuse pool"
+    markets: [Bytes!]! # @derivedFrom(field: "pool")
 }
 
 """
@@ -84,6 +85,8 @@ type Market @entity {
     underlyingPriceUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
+
+    # # Relations for `Pool` entity...
     # "Relation to the `Pool` entity"
     # pool: Pool!
 }
