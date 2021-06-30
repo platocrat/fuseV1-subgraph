@@ -10,6 +10,6 @@ export function handlePoolRegistered(event: PoolRegistered): void {
   // Dynamically index all new listed Fuse pools
   Comptroller.create(event.params.pool.comptroller)
   // Create the pool for this comptroller, since it's now been registered.
-  let pool = createPool(event.params.pool.comptroller.toHexString())
+  let pool = createPool(event.params.pool.comptroller.toHexString(), event)
   pool.save()
 }

@@ -15,6 +15,8 @@ import {
   mantissaFactorBD,
   cTokenDecimalsBD,
   zeroBD,
+  convertMantissaToAPY,
+  convertMantissaToAPR,
 } from './helpers'
 
 let cUSDCAddress = '0x39aa39c021dfbae8fac545936693ac917d5e7563'
@@ -175,6 +177,8 @@ export function createMarket(marketAddress: string): Market {
   market.name = contract.name()
   market.reserves = zeroBD
   market.supplyRate = zeroBD
+  market.supplyRateAPR = zeroBD
+  market.supplyRateAPY = zeroBD
   market.symbol = contract.symbol()
   market.totalBorrows = zeroBD
   market.totalSupply = zeroBD
@@ -332,11 +336,15 @@ export function updateMarket(
       log.info('***CALL FAILED*** : cERC20 supplyRatePerBlock() reverted', [])
       market.supplyRate = zeroBD
     } else {
+
       market.supplyRate = supplyRatePerBlock.value
         .toBigDecimal()
         .times(BigDecimal.fromString('2102400'))
         .div(mantissaFactorBD)
         .truncate(mantissaFactor)
+
+      market.supplyRateAPY = convertMantissaToAPY(supplyRatePerBlock.value, 365)
+      market.supplyRateAPR = convertMantissaToAPR(supplyRatePerBlock.value)
     }
     market.save()
   }

@@ -4,6 +4,8 @@ Pool stores all high level variables for a Comptroller's Fuse pool
 type Pool @entity {
     "Same as `comptroller` field to allow for dynamic loading of FusePool entities"
     id: ID!
+    "Fuse pool index, taken from emitted `PoolRegistered` event"
+    index: BigInt!
     # Fields that match Rari's Fuse pool API
     "Name of the Fuse pool"
     name: String!
@@ -23,6 +25,7 @@ type Pool @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
+    # markets: [Market!]! @derivedFrom(field: "pool")
 }
 
 """
@@ -46,6 +49,10 @@ type Market @entity {
     reserves: BigDecimal!
     "Yearly supply rate. With 2104400 blocks per year"
     supplyRate: BigDecimal!
+
+    supplyRateAPR: BigDecimal!
+    supplyRateAPY: BigDecimal!
+
     "CToken symbol"
     symbol: String!
     "CToken address"
@@ -76,6 +83,8 @@ type Market @entity {
     underlyingPriceUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
+    # "Relation to the `Pool` entity"
+    # pool: Pool!
 }
 
 """
