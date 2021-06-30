@@ -1,6 +1,6 @@
 {
   "name": "fuse-subgraph",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "main": "subgraph.yaml",
   "repository": {
     "type": "git",
