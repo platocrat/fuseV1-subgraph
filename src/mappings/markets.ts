@@ -34,30 +34,14 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
+  let oracleAddress = Address.fromString('0x1887118e49e0f4a78bd71b792a49de03504a764d')
   let underlyingPrice: BigDecimal
-  let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
 
-  /* PriceOracle2 is used at the block the Comptroller starts using it.
-   * see here https://etherscan.io/address/0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b#events
-   * Search for event topic 0xd52b2b9b7e9ee655fcb95d2e5b9e0c9f69e7ef2b8e9d2d0ea78402d576d22e22,
-   * and see block 7715908.
-   *
-   * This must use the cToken address.
-   *
-   * Note this returns the value without factoring in token decimals and wei, so we must divide
-   * the number by (ethDecimals - tokenDecimals) and again by the mantissa.
-   * USDC would be 10 ^ ((18 - 6) + 18) = 10 ^ 30
-   *
-   * Note that they deployed 3 different PriceOracles at the beginning of the Comptroller,
-   * and that they handle the decimals different, which can break the subgraph. So we actually
-   * defer to Oracle 1 before block 7715908, which works,
-   * until this one is deployed, which was used for 121 days */
   if (blockNumber > 7715908) {
     let mantissaDecimalFactor = 18 - underlyingDecimals + 18
     let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
-    let oracle2 = MasterPriceOracle.bind(oracleAddress)
-    let tryUnderlyingPrice = oracle2.try_getUnderlyingPrice(eventAddress)
+    let oracle = MasterPriceOracle.bind(oracleAddress)
+    let tryUnderlyingPrice = oracle.try_getUnderlyingPrice(eventAddress)
 
     tryUnderlyingPrice.reverted
       ? underlyingPrice = BigDecimal.fromString('0')
@@ -65,17 +49,9 @@ function getTokenPrice(
         .toBigDecimal()
         .div(bdFactor)
 
-    /* PriceOracle(1) is used (only for the first ~100 blocks of Comptroller. Annoying but we must
-     * handle this. We use it for more than 100 blocks, see reason at top of if statement
-     * of PriceOracle2.
-     *
-     * This must use the token address, not the cToken address.
-     *
-     * Note this returns the value already factoring in token decimals and wei, therefore
-     * we only need to divide by the mantissa, 10^18 */
   } else {
-    let oracle1 = PriceOracle.bind(priceOracle1Address)
-    let tryUnderlyingPrice = oracle1.try_getUnderlyingPrice(underlyingAddress)
+    let oracle = MasterPriceOracle.bind(oracleAddress)
+    let tryUnderlyingPrice = oracle.try_getUnderlyingPrice(underlyingAddress)
 
     tryUnderlyingPrice.reverted
       ? underlyingPrice = BigDecimal.fromString('0')
@@ -88,31 +64,35 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUSDCpriceETH(blockNumber: i32): BigDecimal {
-  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
-  let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
+  let oracleAddress = Address.fromString('0x1887118e49e0f4a78bd71b792a49de03504a764d')
   let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
   let usdPrice: BigDecimal
 
   // See notes on block number if statement in getTokenPrices()
   if (blockNumber > 7715908) {
-    let oracle2 = MasterPriceOracle.bind(oracleAddress)
+    let oracle = MasterPriceOracle.bind(oracleAddress)
     let mantissaDecimalFactorUSDC = 18 - 6 + 18
     let bdFactorUSDC = exponentToBigDecimal(mantissaDecimalFactorUSDC)
-    let tryUnderlyingPrice = oracle2
+    let tryUnderlyingPrice = oracle
       .try_getUnderlyingPrice(Address.fromString(cUSDCAddress))
 
+    /**
+     *  @dev @todo This gets reverted
+     */
     tryUnderlyingPrice.reverted
-      ? usdPrice = BigDecimal.fromString('0')
+      ? usdPrice = BigDecimal.fromString('1')
       : usdPrice = tryUnderlyingPrice.value
         .toBigDecimal()
         .div(bdFactorUSDC)
   } else {
-    let oracle1 = PriceOracle.bind(priceOracle1Address)
-    let tryUnderlyingPrice = oracle1
+    let oracle = MasterPriceOracle.bind(oracleAddress)
+    let tryUnderlyingPrice = oracle
       .try_getUnderlyingPrice(Address.fromString(USDCAddress))
-
+    /**
+     *  @dev @todo This gets reverted
+     */
     tryUnderlyingPrice.reverted
-      ? usdPrice = BigDecimal.fromString('0')
+      ? usdPrice = BigDecimal.fromString('1')
       : usdPrice = tryUnderlyingPrice.value
         .toBigDecimal()
         .div(mantissaFactorBD)
@@ -211,14 +191,14 @@ export function createMarket(
 
 // Only to be used after block 10678764, since it's aimed to fix the change to USD based price oracle.
 function getETHinUSD(blockNumber: i32): BigDecimal {
-  let oracleAddress = Address.fromString('0x1887118E49e0F4A78Bd71B792a49dE03504A764D')
+  let oracleAddress = Address.fromString('0x1887118e49e0f4a78bd71b792a49de03504a764d')
   let oracle = MasterPriceOracle.bind(oracleAddress)
   let ethPriceInUSD: BigDecimal
   let tryUnderlyingPrice = oracle
     .try_getUnderlyingPrice(Address.fromString(cETHAddress))
 
   tryUnderlyingPrice.reverted
-    ? ethPriceInUSD = BigDecimal.fromString('0')
+    ? ethPriceInUSD = BigDecimal.fromString('2080')
     : ethPriceInUSD = tryUnderlyingPrice.value
       .toBigDecimal()
       .div(mantissaFactorBD)
@@ -242,6 +222,10 @@ export function updateMarket(
     market.pool = contract._address.toHexString()
 
     // After block 10678764 price is calculated based on USD instead of ETH
+    /**
+     * @dev Rari Fuse subgraph runs through this if/else check every time since
+     *      the `startBlock` specified in `subgraph.yaml` is 12059666.
+     */
     if (blockNumber > 10678764) {
       let ethPriceInUSD = getETHinUSD(blockNumber)
 
@@ -256,8 +240,8 @@ export function updateMarket(
           market.underlyingDecimals,
         )
 
-        ethPriceInUSD == BigDecimal.fromString('0')
-          ? market.underlyingPrice = BigDecimal.fromString('0')
+        ethPriceInUSD == BigDecimal.fromString('2080')
+          ? market.underlyingPrice = BigDecimal.fromString('6969')
           : market.underlyingPrice = tokenPriceUSD
             .div(ethPriceInUSD)
             .truncate(market.underlyingDecimals)
@@ -296,14 +280,19 @@ export function updateMarket(
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
     market.blockTimestamp = blockTimestamp
-    market.totalSupply = contract
+
+    let totalSupply = contract
       .totalSupply()
       .toBigDecimal()
       .div(cTokenDecimalsBD)
-    market.totalSupplyUSD = market.totalSupply
-      .times(market.underlyingPrice)
+
+    market.totalSupply = totalSupply
+
+    /** @todo Returns with a value of `0` */
+    market.totalSupplyUSD = totalSupply
       .div(fixed36.toBigDecimal())
-      .times(getETHinUSD(blockNumber))
+      .times(market.underlyingPrice)
+    // .times(getETHinUSD(blockNumber))
 
     /* Exchange rate explanation
        In Practice
@@ -333,15 +322,21 @@ export function updateMarket(
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-    market.totalBorrows = contract
+
+    let totalBorrows = contract
       .totalBorrows()
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-    market.totalBorrowUSD = market.totalBorrows
-      .times(market.underlyingPrice)
+
+    market.totalBorrows = totalBorrows
+
+    /** @todo Returns with a value of `0` */
+    market.totalBorrowUSD = totalBorrows
       .div(fixed36.toBigDecimal())
-      .times(getETHinUSD(blockNumber))
+      .times(market.underlyingPrice)
+    // .times(getETHinUSD(blockNumber))
+
     market.cash = contract
       .getCash()
       .toBigDecimal()

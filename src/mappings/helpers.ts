@@ -66,14 +66,18 @@ export function convertMantissaToAPR(mantissa: BigInt): BigDecimal {
 export function getTotalSupplyUSDInPool(_contract: Comptroller): BigDecimal {
   let totalSupplyUSDInPool: BigDecimal = BigDecimal.fromString('0'),
     contract = Pool.load(_contract._address.toHexString()),
-    allMarketsInPool = contract.markets
+    allMarketsInPool: Address[] = _contract.getAllMarkets()
+
+  let assetAddress: Address,
+    asset: Market | null,
+    assetTotalSupplyUSD: BigDecimal
 
   // allMarketsInPool = getAllMarketsInPool(_contract)
   for (let i = 0; allMarketsInPool.length; i++) {
-    // let assetAddress: string = allMarketsInPool[i]
-    // let asset = Market.load(assetAddress)
-    // let assetTotalSupplyUSD = asset.totalSupplyUSD
-    let assetTotalSupplyUSD = BigDecimal.fromString('1')
+    assetAddress = allMarketsInPool[i]
+    asset = Market.load(assetAddress.toHexString())
+    assetTotalSupplyUSD = asset.totalSupplyUSD
+    // let assetTotalSupplyUSD = BigDecimal.fromString('1')
 
     totalSupplyUSDInPool.plus(assetTotalSupplyUSD)
   }
@@ -84,13 +88,17 @@ export function getTotalSupplyUSDInPool(_contract: Comptroller): BigDecimal {
 export function getTotalBorrowUSDInPool(_contract: Comptroller): BigDecimal {
   let totalBorrowUSDInPool: BigDecimal = BigDecimal.fromString('0'),
     contract = Pool.load(_contract._address.toHexString()),
-    allMarketsInPool = contract.markets
+    allMarketsInPool: Address[] = _contract.getAllMarkets()
+
+  let assetAddress: Address,
+    asset: Market | null,
+    assetTotalBorrowUSD: BigDecimal
 
   for (let i = 0; allMarketsInPool.length; i++) {
-    // let assetAddress: string = allMarketsInPool[i]
-    // let asset = Market.load(assetAddress)
-    // let assetTotalBorrowUSD = asset.totalBorrowUSD
-    let assetTotalBorrowUSD = BigDecimal.fromString('1')
+    assetAddress = allMarketsInPool[i]
+    asset = Market.load(assetAddress.toHexString())
+    assetTotalBorrowUSD = asset.totalBorrowUSD
+    // let assetTotalBorrowUSD = BigDecimal.fromString('1')
 
     totalBorrowUSDInPool.plus(assetTotalBorrowUSD)
   }
