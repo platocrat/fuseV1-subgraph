@@ -1,14 +1,16 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
+/* External imports */
 // For each division by 10, add one to exponent to truncate one significant figure
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
+
+/* Internal imports */
 import { Market } from '../types/schema'
 import { PriceOracle } from '../types/templates/CToken/PriceOracle'
 import { MasterPriceOracle } from '../types/templates/CToken/MasterPriceOracle'
 import { ERC20 } from '../types/templates/CToken/ERC20'
 import { CToken } from '../types/templates/CToken/CToken'
 import { Comptroller } from '../types/templates/Comptroller/Comptroller'
-
 import {
   exponentToBigDecimal,
   mantissaFactor,
@@ -17,6 +19,7 @@ import {
   zeroBD,
   convertMantissaToAPY,
   convertMantissaToAPR,
+  fixed36
 } from './helpers'
 import { MarketListed } from '../types/Comptroller/Comptroller'
 
@@ -193,6 +196,8 @@ export function createMarket(
   market.symbol = contract.symbol()
   market.totalBorrows = zeroBD
   market.totalSupply = zeroBD
+  market.totalBorrowUSD = zeroBD
+  market.totalSupplyUSD = zeroBD
 
   market.accrualBlockNumber = 0
   market.blockTimestamp = 0
@@ -295,6 +300,10 @@ export function updateMarket(
       .totalSupply()
       .toBigDecimal()
       .div(cTokenDecimalsBD)
+    market.totalSupplyUSD = market.totalSupply
+      .times(market.underlyingPrice)
+      .div(fixed36.toBigDecimal())
+      .times(getETHinUSD(blockNumber))
 
     /* Exchange rate explanation
        In Practice
@@ -329,6 +338,10 @@ export function updateMarket(
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
+    market.totalBorrowUSD = market.totalBorrows
+      .times(market.underlyingPrice)
+      .div(fixed36.toBigDecimal())
+      .times(getETHinUSD(blockNumber))
     market.cash = contract
       .getCash()
       .toBigDecimal()

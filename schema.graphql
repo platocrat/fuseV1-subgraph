@@ -25,8 +25,14 @@ type Pool @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
+    
+    # Fields that are not in Rari's api
     "All Markets (i.e CToken) that are in a Fuse pool"
     markets: [Market!]! # @derivedFrom(field: "pool")
+    "Total amount of liquidity that has been supplied to this Fuse pool"
+    totalSupplyUSD: BigDecimal!
+    "Total amount of liquidity that has been borrowed from this Fuse pool"
+    totalBorrowUSD: BigDecimal!
 }
 
 """
@@ -85,6 +91,10 @@ type Market @entity {
     underlyingPriceUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
+    "Total amount of supply-side liquidity, in USD, in this market"
+    totalSupplyUSD: BigDecimal!
+    "Total amount of borrow-side liquidity, in USD, in this market"
+    totalBorrowUSD: BigDecimal!
 
     # Relations for `Pool` entity...
     "Relation to the `Pool` entity"

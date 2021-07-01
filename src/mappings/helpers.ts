@@ -12,15 +12,25 @@ import {
   Market,
   Pool
 } from '../types/schema'
+import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 
 export const secondsInFourDays = 4 * 60 * 24
 export const apr = 2372500
 
+/* New variables added for Fuse pool */
 export let fixed18 = BigInt.fromI32(10).pow(18)
 export let fixed16 = BigInt.fromI32(10).pow(16)
+export let fixed36 = BigInt.fromI32(10).pow(36)
 export let aprBI = BigInt.fromI32(apr)
 export let oneBI = BigInt.fromI32(1)
 export let secondsInFourDaysBI = BigInt.fromI32(secondsInFourDays)
+
+/* Pre-existing variables from Compound */
+export let mantissaFactor = 18
+export let cTokenDecimals = 8
+export let mantissaFactorBD: BigDecimal = exponentToBigDecimal(18)
+export let cTokenDecimalsBD: BigDecimal = exponentToBigDecimal(8)
+export let zeroBD = BigDecimal.fromString('0')
 
 export function exponentToBigDecimal(decimals: i32): BigDecimal {
   let bd = BigDecimal.fromString('1')
@@ -53,11 +63,54 @@ export function convertMantissaToAPR(mantissa: BigInt): BigDecimal {
   // return (mantissa.toI32() * 2372500) / 1e16;
 }
 
-export let mantissaFactor = 18
-export let cTokenDecimals = 8
-export let mantissaFactorBD: BigDecimal = exponentToBigDecimal(18)
-export let cTokenDecimalsBD: BigDecimal = exponentToBigDecimal(8)
-export let zeroBD = BigDecimal.fromString('0')
+export function getTotalSupplyUSDInPool(_contract: Comptroller): BigDecimal {
+  let totalSupplyUSDInPool: BigDecimal,
+    allMarketsInPool: string[]
+
+  allMarketsInPool = getAllMarketsInPool(_contract)
+
+  for (let i = 0; allMarketsInPool.length; i++) {
+    let comptrollerContract = Comptroller.bind(_contract._address)
+
+    let assetAddress: string = allMarketsInPool[i]
+    let asset = Market.load(assetAddress)
+    let assetTotalSupplyUSD = asset.totalSupplyUSD
+
+    totalSupplyUSDInPool.plus(assetTotalSupplyUSD)
+  }
+
+  return totalSupplyUSDInPool
+}
+
+export function getTotalBorrowUSDInPool(_contract: Comptroller): BigDecimal {
+  let totalBorrowUSDInPool: BigDecimal,
+    allMarketsInPool: string[]
+
+  allMarketsInPool = getAllMarketsInPool(_contract)
+
+  for (let i = 0; allMarketsInPool.length; i++) {
+    let comptrollerContract = Comptroller.bind(_contract._address)
+
+    let assetAddress: string = allMarketsInPool[i]
+    let asset = Market.load(assetAddress)
+    let assetTotalBorrowUSD = asset.totalBorrowUSD
+
+    totalBorrowUSDInPool.plus(assetTotalBorrowUSD)
+  }
+
+  return totalBorrowUSDInPool
+}
+
+export function getAllMarketsInPool(_contract: Comptroller): string[] {
+  let allMarketsInPool_ = _contract.getAllMarkets()
+  let allMarketsInPool: string[] = []
+
+  for (let i = 0; i < allMarketsInPool_.length; i++) {
+    allMarketsInPool.push(allMarketsInPool_[i].toHexString())
+  }
+
+  return allMarketsInPool
+}
 
 export function createAccountCToken(
   cTokenStatsID: string,

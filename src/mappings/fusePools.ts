@@ -6,17 +6,12 @@ import {
 } from '../types/FusePoolDirectory/FusePoolDirectory'
 import { Pool } from '../types/schema'
 import { Comptroller } from '../types/templates/Comptroller/Comptroller'
-
-export function getAllMarketsInPool(contract: Comptroller): string[] {
-  let _allMarketsInPool = contract.getAllMarkets()
-  let allMarketsInPool: string[] = []
-
-  for (let i = 0; i < _allMarketsInPool.length; i++) {
-    allMarketsInPool.push(_allMarketsInPool[i].toHexString())
-  }
-
-  return allMarketsInPool
-}
+import {
+  zeroBD,
+  getAllMarketsInPool,
+  getTotalSupplyUSDInPool,
+  getTotalBorrowUSDInPool
+} from './helpers'
 
 /**
  * @dev Creates FusePool entity
@@ -43,6 +38,8 @@ export function createPool(_comptrollerAddress: string, poolRegisteredEvent: Poo
   pool.timestampPosted = BigInt.fromString('0')
 
   pool.markets = getAllMarketsInPool(contract)
+  pool.totalSupplyUSD = zeroBD
+  pool.totalBorrowUSD = zeroBD
 
   return pool as Pool
 }
@@ -70,8 +67,10 @@ export function updatePool(
 
   pool.markets = getAllMarketsInPool(contract)
 
+  pool.totalSupplyUSD = getTotalSupplyUSDInPool(contract)
+  pool.totalBorrowUSD = getTotalBorrowUSDInPool(contract)
+
   pool.save()
 
   return pool as Pool
 }
-

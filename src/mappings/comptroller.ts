@@ -24,10 +24,11 @@ import {
   updateCommonCTokenStats,
   createAccount,
   createAdmin,
-  updateCommonPoolStats
+  updateCommonPoolStats,
+  getAllMarketsInPool
 } from './helpers'
 import { createMarket, updateMarket } from './markets'
-import { getAllMarketsInPool, updatePool } from './fusePools'
+import { updatePool } from './fusePools'
 
 export function handleMarketListed(event: MarketListed): void {
   // Dynamically index all new listed tokens
