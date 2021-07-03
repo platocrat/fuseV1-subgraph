@@ -241,7 +241,7 @@ export function updateMarket(
         )
 
         ethPriceInUSD == BigDecimal.fromString('2080')
-          ? market.underlyingPrice = BigDecimal.fromString('6969')
+          ? market.underlyingPrice = BigDecimal.fromString('0')
           : market.underlyingPrice = tokenPriceUSD
             .div(ethPriceInUSD)
             .truncate(market.underlyingDecimals)
