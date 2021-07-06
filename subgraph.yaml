@@ -19,7 +19,7 @@ dataSources:
       file: ./src/mappings/fusePoolDirectory.ts
       entities:
         # - FusePoolDirectory
-        - FusePool # Add `FusePool` entity to `schema.graphql`
+        - Pool # Add `FusePool` entity to `./schema.graphql`
       abis:
         - name: FusePoolDirectory
           file: ./abis/Fuse/FusePoolDirectory.json

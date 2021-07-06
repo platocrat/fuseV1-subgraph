@@ -9,8 +9,8 @@ import { Comptroller } from '../types/templates/Comptroller/Comptroller'
 import {
   zeroBD,
   getAllMarketsInPool,
-  getTotalSupplyUSDInPool,
-  getTotalBorrowUSDInPool
+  // getTotalSupplyUSDInPool,
+  // getTotalBorrowUSDInPool
 } from './helpers'
 
 /**
@@ -38,8 +38,8 @@ export function createPool(_comptrollerAddress: string, poolRegisteredEvent: Poo
   pool.timestampPosted = BigInt.fromString('0')
 
   pool.markets = getAllMarketsInPool(contract)
-  pool.totalSupplyUSD = zeroBD
-  pool.totalBorrowUSD = zeroBD
+  // pool.totalSupplyUSD = zeroBD
+  // pool.totalBorrowUSD = zeroBD
 
   return pool as Pool
 }
@@ -67,8 +67,8 @@ export function updatePool(
 
   pool.markets = getAllMarketsInPool(contract)
 
-  pool.totalSupplyUSD = getTotalSupplyUSDInPool(contract)
-  pool.totalBorrowUSD = getTotalBorrowUSDInPool(contract)
+  // pool.totalSupplyUSD = getTotalSupplyUSDInPool(contract)
+  // pool.totalBorrowUSD = getTotalBorrowUSDInPool(contract)
 
   pool.save()
 

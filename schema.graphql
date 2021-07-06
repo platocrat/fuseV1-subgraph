@@ -29,10 +29,10 @@ type Pool @entity {
     # Fields that are not in Rari's api
     "All Markets (i.e CToken) that are in a Fuse pool"
     markets: [Market!]! # @derivedFrom(field: "pool")
-    "Total amount of liquidity that has been supplied to this Fuse pool"
-    totalSupplyUSD: BigDecimal!
-    "Total amount of liquidity that has been borrowed from this Fuse pool"
-    totalBorrowUSD: BigDecimal!
+    # "Total amount of liquidity that has been supplied to this Fuse pool"
+    # totalSupplyUSD: BigDecimal!
+    # "Total amount of liquidity that has been borrowed from this Fuse pool"
+    # totalBorrowUSD: BigDecimal!
 }
 
 """
@@ -41,7 +41,7 @@ Market stores all high level variables for a cToken market
 type Market @entity {
     #Fields that match compounds API
     "Yearly borrow rate. With 2102400 blocks per year"
-    borrowRate: BigDecimal!
+    borrowRate: BigInt!
     "The cToken contract balance of ERC20 or ETH"
     cash: BigDecimal!
     "Collateral factor determining how much one can borrow"
@@ -55,11 +55,11 @@ type Market @entity {
     "Reserves stored in the contract"
     reserves: BigDecimal!
     "Yearly supply rate. With 2104400 blocks per year"
-    supplyRate: BigDecimal!
+    supplyRate: BigInt!
     "Supply rate annual percent rate -- measures interest charged"
-    supplyRateAPR: BigDecimal!
+    borrowRateAPR: BigInt!
     "Supply rate annual percent yield -- measures interest earned"
-    supplyRateAPY: BigDecimal!
+    supplyRateAPY: BigInt!
 
     "CToken symbol"
     symbol: String!
@@ -91,10 +91,10 @@ type Market @entity {
     underlyingPriceUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
-    "Total amount of supply-side liquidity, in USD, in this market"
-    totalSupplyUSD: BigDecimal!
-    "Total amount of borrow-side liquidity, in USD, in this market"
-    totalBorrowUSD: BigDecimal!
+    # "Total amount of supply-side liquidity, in USD, in this market"
+    # totalSupplyUSD: BigDecimal!
+    # "Total amount of borrow-side liquidity, in USD, in this market"
+    # totalBorrowUSD: BigDecimal!
 
     # Relations for `Pool` entity...
     "Relation to the `Pool` entity"
@@ -131,7 +131,7 @@ type Account @entity {
     "User ETH address"
     id: ID!
     "Array of CTokens user is in"
-    tokens: [AccountCToken!]! @derivedFrom(field: "account")
+    accountCTokens: [AccountCToken!]! @derivedFrom(field: "account")
     "Count user has been liquidated"
     countLiquidated: Int!
     "Count user has liquidated others"

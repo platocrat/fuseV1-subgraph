@@ -40,8 +40,8 @@ export function exponentToBigDecimal(decimals: i32): BigDecimal {
   return bd
 }
 
-export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigDecimal {
-  let base: BigInt = mantissa
+export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigInt {
+  let base = mantissa
     .div(fixed18)
     .times(secondsInFourDaysBI)
     .plus(oneBI)
@@ -52,59 +52,60 @@ export function convertMantissaToAPY(mantissa: BigInt, dayRange: number): BigDec
     .pow(5).pow(73)
     .minus(oneBI)
     .times(BigInt.fromI32(100))
-    .toBigDecimal()
   // return (Math.pow((mantissa / 1e18) * (4 * 60 * 24) + 1, dayRange) - 1) * 100;
 }
 
-export function convertMantissaToAPR(mantissa: BigInt): BigDecimal {
+export function convertMantissaToAPR(mantissa: BigInt): BigInt {
   let numerator: BigInt = mantissa.times(aprBI)
   let denominator = fixed16
-  return numerator.div(denominator).toBigDecimal()
+
+  return numerator
+    .div(denominator)
   // return (mantissa.toI32() * 2372500) / 1e16;
 }
 
-export function getTotalSupplyUSDInPool(_contract: Comptroller): BigDecimal {
-  let totalSupplyUSDInPool: BigDecimal = BigDecimal.fromString('0'),
-    contract = Pool.load(_contract._address.toHexString()),
-    allMarketsInPool: Address[] = _contract.getAllMarkets()
+// export function getTotalSupplyUSDInPool(_contract: Comptroller): BigDecimal {
+//   let totalSupplyUSDInPool: BigDecimal = BigDecimal.fromString('0'),
+//     contract = Pool.load(_contract._address.toHexString()),
+//     allMarketsInPool: Address[] = _contract.getAllMarkets()
 
-  let assetAddress: Address,
-    asset: Market | null,
-    assetTotalSupplyUSD: BigDecimal
+//   let assetAddress: Address,
+//     asset: Market | null,
+//     assetTotalSupplyUSD: BigDecimal
 
-  // allMarketsInPool = getAllMarketsInPool(_contract)
-  for (let i = 0; allMarketsInPool.length; i++) {
-    assetAddress = allMarketsInPool[i]
-    asset = Market.load(assetAddress.toHexString())
-    assetTotalSupplyUSD = asset.totalSupplyUSD
-    // let assetTotalSupplyUSD = BigDecimal.fromString('1')
+//   // allMarketsInPool = getAllMarketsInPool(_contract)
+//   for (let i = 0; allMarketsInPool.length; i++) {
+//     assetAddress = allMarketsInPool[i]
+//     asset = Market.load(assetAddress.toHexString())
+//     assetTotalSupplyUSD = asset.totalSupplyUSD
+//     // let assetTotalSupplyUSD = BigDecimal.fromString('1')
 
-    totalSupplyUSDInPool.plus(assetTotalSupplyUSD)
-  }
+//     totalSupplyUSDInPool.plus(assetTotalSupplyUSD)
+//   }
 
-  return totalSupplyUSDInPool
-}
+//   return totalSupplyUSDInPool
+// }
 
-export function getTotalBorrowUSDInPool(_contract: Comptroller): BigDecimal {
-  let totalBorrowUSDInPool: BigDecimal = BigDecimal.fromString('0'),
-    contract = Pool.load(_contract._address.toHexString()),
-    allMarketsInPool: Address[] = _contract.getAllMarkets()
+// export function getTotalBorrowUSDInPool(_contract: Comptroller): BigDecimal {
+//   let totalBorrowUSDInPool: BigDecimal = BigDecimal.fromString('0'),
+//     contract = Pool.load(_contract._address.toHexString()),
+//     allMarketsInPool: Address[] = _contract.getAllMarkets()
 
-  let assetAddress: Address,
-    asset: Market | null,
-    assetTotalBorrowUSD: BigDecimal
+//   let assetAddress: Address,
+//     asset: Market | null,
+//     assetTotalBorrowUSD: BigDecimal
 
-  for (let i = 0; allMarketsInPool.length; i++) {
-    assetAddress = allMarketsInPool[i]
-    asset = Market.load(assetAddress.toHexString())
-    assetTotalBorrowUSD = asset.totalBorrowUSD
-    // let assetTotalBorrowUSD = BigDecimal.fromString('1')
+//   for (let i = 0; allMarketsInPool.length; i++) {
+//     assetAddress = allMarketsInPool[i]
+//     asset = Market.load(assetAddress.toHexString())
+//     assetTotalBorrowUSD = asset.totalBorrowUSD
+//     // let assetTotalBorrowUSD = BigDecimal.fromString('1')
 
-    totalBorrowUSDInPool.plus(assetTotalBorrowUSD)
-  }
+//     totalBorrowUSDInPool.plus(assetTotalBorrowUSD)
+//   }
 
-  return totalBorrowUSDInPool
-}
+//   return totalBorrowUSDInPool
+// }
 
 export function getAllMarketsInPool(_contract: Comptroller): string[] {
   let allMarketsInPool_ = _contract.getAllMarkets()

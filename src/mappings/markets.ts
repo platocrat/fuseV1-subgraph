@@ -157,7 +157,7 @@ export function createMarket(
   let interestRateModelAddress = contract.try_interestRateModel()
   let reserveFactor = contract.try_reserveFactorMantissa()
 
-  market.borrowRate = zeroBD
+  market.borrowRate = BigInt.fromString('0')
   market.cash = zeroBD
   market.collateralFactor = zeroBD
   market.exchangeRate = zeroBD
@@ -170,14 +170,14 @@ export function createMarket(
   if (contract.name().includes('Ethereum')) market.underlyingName = 'Ethereum'
 
   market.reserves = zeroBD
-  market.supplyRate = zeroBD
-  market.supplyRateAPR = zeroBD
-  market.supplyRateAPY = zeroBD
+  market.supplyRate = BigInt.fromI32(0)
+  market.borrowRateAPR = BigInt.fromI32(0)
+  market.supplyRateAPY = BigInt.fromI32(0)
   market.symbol = contract.symbol()
   market.totalBorrows = zeroBD
   market.totalSupply = zeroBD
-  market.totalBorrowUSD = zeroBD
-  market.totalSupplyUSD = zeroBD
+  // market.totalBorrowUSD = zeroBD
+  // market.totalSupplyUSD = zeroBD
 
   market.accrualBlockNumber = 0
   market.blockTimestamp = 0
@@ -288,10 +288,10 @@ export function updateMarket(
 
     market.totalSupply = totalSupply
 
-    /** @todo Returns with a value of `0` */
-    market.totalSupplyUSD = totalSupply
-      .div(fixed36.toBigDecimal())
-      .times(market.underlyingPrice)
+    // /** @todo Returns with a value of `0` */
+    // market.totalSupplyUSD = totalSupply
+    //   .div(fixed36)
+    //   .times(market.underlyingPrice)
     // .times(getETHinUSD(blockNumber))
 
     /* Exchange rate explanation
@@ -331,10 +331,10 @@ export function updateMarket(
 
     market.totalBorrows = totalBorrows
 
-    /** @todo Returns with a value of `0` */
-    market.totalBorrowUSD = totalBorrows
-      .div(fixed36.toBigDecimal())
-      .times(market.underlyingPrice)
+    // /** @todo Returns with a value of `0` */
+    // market.totalBorrowUSD = totalBorrows
+    //   .div(fixed36)
+    //   .times(market.underlyingPrice)
     // .times(getETHinUSD(blockNumber))
 
     market.cash = contract
@@ -344,28 +344,32 @@ export function updateMarket(
       .truncate(market.underlyingDecimals)
 
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
-    market.borrowRate = contract
-      .borrowRatePerBlock()
-      .toBigDecimal()
-      .times(BigDecimal.fromString('2102400'))
-      .div(mantissaFactorBD)
-      .truncate(mantissaFactor)
+    let borrowRatePerBlock = contract.try_borrowRatePerBlock()
+    if (borrowRatePerBlock.reverted) {
+      log.info('***CALL FAILED*** : cERC20 borrowRatePerBlock() reverted', [])
+      market.borrowRate = BigInt.fromI32(0)
+    } else {
+      market.borrowRate = borrowRatePerBlock.value
+      // .toBigDecimal()
+      // .times(BigDecimal.fromString('2102400'))
+      // .div(mantissaFactorBD)
+      // .truncate(mantissaFactor)
+    }
 
     // This fails on only the first call to cZRX. It is unclear why, but otherwise it works.
     // So we handle it like this.
     let supplyRatePerBlock = contract.try_supplyRatePerBlock()
     if (supplyRatePerBlock.reverted) {
       log.info('***CALL FAILED*** : cERC20 supplyRatePerBlock() reverted', [])
-      market.supplyRate = zeroBD
+      market.supplyRate = BigInt.fromI32(0)
     } else {
       market.supplyRate = supplyRatePerBlock.value
-        .toBigDecimal()
-        .times(BigDecimal.fromString('2102400'))
-        .div(mantissaFactorBD)
-        .truncate(mantissaFactor)
+      // .times(BigDecimal.fromString('2102400'))
+      // .div(mantissaFactorBD)
+      // .truncate(mantissaFactor)
 
       market.supplyRateAPY = convertMantissaToAPY(supplyRatePerBlock.value, 365)
-      market.supplyRateAPR = convertMantissaToAPR(supplyRatePerBlock.value)
+      market.borrowRateAPR = convertMantissaToAPR(supplyRatePerBlock.value)
     }
 
     market.save()
