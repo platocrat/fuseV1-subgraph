@@ -21,7 +21,7 @@ import {
   RepayEvent,
 } from '../types/schema'
 
-import { createMarket, updateMarket } from './markets'
+import { updateMarket } from './markets'
 import {
   createAccount,
   updateCommonCTokenStats,

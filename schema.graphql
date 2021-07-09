@@ -1,4 +1,23 @@
 """
+UnderlyingAsset stores all information related to the underlying asset of a 
+specific CToken.
+"""
+type UnderlyingAsset @entity {
+    "Address of the underlying asset of the CToken"
+    id: ID!
+    "Name of the underlying asset of the CToken"
+    name: String!
+    "Symbol of the underlying asset of the CToken"
+    symbol: String!
+    "Price of the underyling asset of the CToken, in ETH"
+    price: BigDecimal!
+    # "Borrows in the market"
+    # totalBorrows: BigDecimal!
+    # "CToken supply. CTokens have 8 decimals"
+    # totalSupply: BigDecimal!
+}
+
+"""
 Pool stores all high level variables for a Comptroller's Fuse pool
 """
 type Pool @entity {
@@ -7,8 +26,6 @@ type Pool @entity {
     "Fuse pool index, taken from emitted `PoolRegistered` event"
     index: BigInt!
     # Fields that match Rari's Fuse pool API
-    "Name of the Fuse pool"
-    name: String!
     "Creator/admin of the Fuse pool"
     creator: Bytes!
     "Comptroller address"
@@ -159,8 +176,6 @@ type AdminFusePool @entity {
     id: ID!
     "Relation to comptroller"
     pool: Pool!
-    "Name of the Fuse pool"
-    name: String!
     "Relation to user"
     admin: Admin!
     "Transactions data"

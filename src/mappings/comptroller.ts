@@ -25,7 +25,8 @@ import {
   createAccount,
   createAdmin,
   updateCommonPoolStats,
-  getAllMarketsInPool
+  getAllMarketsInPool,
+  createUnderlyingAsset
 } from './helpers'
 import { createMarket, updateMarket } from './markets'
 import { updatePool } from './fusePools'
@@ -36,6 +37,9 @@ export function handleMarketListed(event: MarketListed): void {
   // Create the market for this token, since it's now been listed.
   let market = createMarket(event.params.cToken.toHexString(), event)
   market.save()
+
+  let underlyingAsset = createUnderlyingAsset(event.params.cToken.toHexString())
+  underlyingAsset.save()
 }
 
 export function handleMarketEntered(event: MarketEntered): void {
@@ -108,8 +112,6 @@ export function handleNewCloseFactor(event: NewCloseFactor): void {
 
     pool.closeFactor = event.params.newCloseFactorMantissa
     poolStats.closeFactor = event.params.newCloseFactorMantissa
-    pool.name = pool.name
-    poolStats.name = pool.name
 
     pool.save()
     poolStats.save()

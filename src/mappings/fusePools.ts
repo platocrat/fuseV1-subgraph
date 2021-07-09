@@ -32,14 +32,12 @@ export function createPool(_comptrollerAddress: string, poolRegisteredEvent: Poo
     ? pool.creator = Address.fromString('0x0000000000000000000000000000000000000000')
     : pool.creator = admin.value
 
+  pool.id = comptrollerAddress.toHexString()
   pool.comptroller = contract._address
-  pool.name = contract._name
   pool.blockPosted = BigInt.fromString('0')
   pool.timestampPosted = BigInt.fromString('0')
 
   pool.markets = getAllMarketsInPool(contract)
-  // pool.totalSupplyUSD = zeroBD
-  // pool.totalBorrowUSD = zeroBD
 
   return pool as Pool
 }
@@ -57,7 +55,7 @@ export function updatePool(
   let contractAddress = Address.fromString(pool.id)
   let contract = Comptroller.bind(contractAddress)
 
-  pool.name = contract._name
+  pool.id = poolID
   pool.comptroller = contract._address
   pool.creator = contract.admin()
   pool.closeFactor = contract.closeFactorMantissa()
@@ -65,10 +63,8 @@ export function updatePool(
   pool.priceOracle = contract.oracle()
   pool.maxAssets = contract.maxAssets()
 
-  pool.markets = getAllMarketsInPool(contract)
-
-  // pool.totalSupplyUSD = getTotalSupplyUSDInPool(contract)
-  // pool.totalBorrowUSD = getTotalBorrowUSDInPool(contract)
+  let allMarkets = getAllMarketsInPool(contract)
+  pool.markets = allMarkets
 
   pool.save()
 

@@ -118,7 +118,6 @@ export function createMarket(
     market.underlyingName = 'Ether'
     market.underlyingSymbol = 'ETH'
     market.underlyingPriceUSD = zeroBD
-    market.pool = marketListedEvent.address.toHexString()
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
@@ -150,8 +149,6 @@ export function createMarket(
     if (marketAddress == cUSDCAddress) {
       market.underlyingPriceUSD = BigDecimal.fromString('1')
     }
-
-    market.pool = marketListedEvent.address.toHexString()
   }
 
   let interestRateModelAddress = contract.try_interestRateModel()
@@ -184,7 +181,7 @@ export function createMarket(
   market.borrowIndex = zeroBD
   market.reserveFactor = reserveFactor.reverted ? BigInt.fromI32(0) : reserveFactor.value
 
-  market.pool = marketListedEvent.address.toHexString()
+  market.pool = marketListedEvent.address.toString()
 
   return market
 }
@@ -218,8 +215,6 @@ export function updateMarket(
   if (market.accrualBlockNumber != blockNumber) {
     let contractAddress = Address.fromString(market.id)
     let contract = CToken.bind(contractAddress)
-
-    market.pool = contract._address.toHexString()
 
     // After block 10678764 price is calculated based on USD instead of ETH
     /**

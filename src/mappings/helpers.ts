@@ -10,9 +10,15 @@ import {
   AdminFusePool,
   AdminFusePoolTransaction,
   Market,
-  Pool
+  Pool,
+  UnderlyingAsset
 } from '../types/schema'
+import { CToken } from '../types/templates/CToken/CToken'
 import { Comptroller } from '../types/templates/Comptroller/Comptroller'
+import { ERC20 } from '../types/templates/CToken/ERC20'
+
+let cETHAddress = '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5'
+let daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
 
 export const secondsInFourDays = 4 * 60 * 24
 export const apr = 2372500
@@ -107,6 +113,12 @@ export function convertMantissaToAPR(mantissa: BigInt): BigInt {
 //   return totalBorrowUSDInPool
 // }
 
+/**
+ * @dev This method currently does not return all the markets for pools:
+ *      6, 9, 11 - 18
+ * @param _contract 
+ * @returns 
+ */
 export function getAllMarketsInPool(_contract: Comptroller): string[] {
   let allMarketsInPool_ = _contract.getAllMarkets()
   let allMarketsInPool: string[] = []
@@ -117,6 +129,56 @@ export function getAllMarketsInPool(_contract: Comptroller): string[] {
 
   return allMarketsInPool
 }
+
+export function createUnderlyingAsset(
+  marketAddress: string
+): UnderlyingAsset {
+  // let market: Market
+  let underlyingAsset: UnderlyingAsset
+  // let contract = CToken.bind(Address.fromString(marketAddress))
+  // let underlyingContract_ = UnderlyingAsset
+  //   .load(market.underlyingAddress.toString())
+
+  underlyingAsset = new UnderlyingAsset('0')
+  underlyingAsset.price = BigDecimal.fromString('1')
+  underlyingAsset.name = 'Ether'
+  underlyingAsset.symbol = 'ETH'
+
+  // if (!underlyingContract_) {
+  //   if (marketAddress == cETHAddress) {
+  //     underlyingAsset.id = '0x0000000000000000000000000000000000000000'
+  //     underlyingAsset.price = BigDecimal.fromString('1')
+  //     underlyingAsset.name = 'Ether'
+  //     underlyingAsset.symbol = 'ETH'
+  //     // It is all other CERC20 contracts
+  //   } else {
+  //     market = new Market(marketAddress)
+  //     underlyingAsset.id = market.underlyingAddress.toString()
+
+  //     let underlyingContract = ERC20.bind(market.underlyingAddress as Address),
+  //       _name = underlyingContract.try_name(),
+  //       _symbol = underlyingContract.try_symbol()
+
+  //     if (market.underlyingAddress.toHexString() != daiAddress) {
+  //       _name.reverted
+  //         ? underlyingAsset.name = "no name detected"
+  //         : underlyingAsset.name = _name.value
+  //       _symbol.reverted
+  //         ? underlyingAsset.symbol = "NONE"
+  //         : underlyingAsset.symbol = _symbol.value
+  //     } else {
+  //       underlyingAsset.name = 'Dai Stablecoin v1.0 (DAI)'
+  //       underlyingAsset.symbol = 'DAI'
+  //     }
+  //     underlyingAsset.price = zeroBD
+  //   }
+  //   return underlyingAsset as UnderlyingAsset
+  // }
+
+  return underlyingAsset as UnderlyingAsset
+  // return underlyingContract_ as UnderlyingAsset
+}
+
 
 export function createAccountCToken(
   cTokenStatsID: string,
