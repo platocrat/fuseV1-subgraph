@@ -19,6 +19,7 @@ import { ERC20 } from '../types/templates/CToken/ERC20'
 
 let cETHAddress = '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5'
 let daiAddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+let mkrAddress = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
 
 export const secondsInFourDays = 4 * 60 * 24
 export const apr = 2372500
@@ -141,50 +142,59 @@ export function createUnderlyingAsset(
   market.underlyingAddress = contract.underlying()
 
   let underlyingAddress = market.underlyingAddress.toHexString()
-  let underlyingAsset: UnderlyingAsset
-  let underlyingAssetEntity = UnderlyingAsset
+  let newUnderlyingAssetEntity: UnderlyingAsset
+  let existingUnderlyingAssetEntity = UnderlyingAsset
     .load(underlyingAddress)
 
   // Used to _prevent_ the subgraph from throwing an error that the newly 
   // created entity does not have an ID.
-  underlyingAsset = new UnderlyingAsset(underlyingAddress)
+  newUnderlyingAssetEntity = new UnderlyingAsset(underlyingAddress)
 
   // Used to handle duplicate UnderlyingAsset entities, return existing entity
-  if (!underlyingAssetEntity) {
+  if (!existingUnderlyingAssetEntity) {
     // If the market address is an address of an Ethereum asset...
     if (marketAddress == cETHAddress) {
-      underlyingAsset = new UnderlyingAsset(underlyingAddress)
-      underlyingAsset.price = zeroBD
-      underlyingAsset.name = 'Ether'
-      underlyingAsset.symbol = 'ETH'
+      newUnderlyingAssetEntity = new UnderlyingAsset(underlyingAddress)
+      newUnderlyingAssetEntity.price = zeroBD
+      newUnderlyingAssetEntity.name = 'Ether'
+      newUnderlyingAssetEntity.symbol = 'ETH'
     } else {
       // It is all other CERC20 contracts
       // `underlyingAssetContract` lets us call the methods on the contract of the 
       // ERC20.
       market = new Market(marketAddress)
       market.underlyingAddress = contract.underlying()
-      underlyingAddress = market.underlyingAddress.toHexString()
-      underlyingAsset = new UnderlyingAsset(underlyingAddress)
-
-      let underlyingContract = ERC20.bind(market.underlyingAddress as Address),
-        name = underlyingContract.try_name(),
-        symbol = underlyingContract.try_symbol()
-
-      // If the underlying asset is not DAI...
-      if (underlyingAddress != daiAddress) {
-        underlyingAsset.name = name.reverted ? "no name detected" : name.value
-        underlyingAsset.symbol = symbol.reverted ? "NONE" : symbol.value
-      } else {
-        underlyingAsset.name = 'Dai Stablecoin v1.0 (DAI)'
-        underlyingAsset.symbol = 'DAI'
-      }
-      underlyingAsset.price = zeroBD
+      newUnderlyingAssetEntity = new UnderlyingAsset(underlyingAddress)
     }
+
+    let underlyingContract = ERC20.bind(market.underlyingAddress as Address),
+      name = underlyingContract.try_name(),
+      symbol = underlyingContract.try_symbol()
+
+    // If the underlying asset is not DAI...
+    if (underlyingAddress == daiAddress) {
+      newUnderlyingAssetEntity.name = 'Dai Stablecoin v1.0 (DAI)'
+      newUnderlyingAssetEntity.symbol = 'DAI'
+    } else if (underlyingAddress == mkrAddress) {
+      newUnderlyingAssetEntity.name = 'Maker (MKR)'
+      newUnderlyingAssetEntity.symbol = 'MKR'
+    } else {
+      newUnderlyingAssetEntity.name = name.reverted ? "no name detected" : name.value
+      newUnderlyingAssetEntity.symbol = symbol.reverted ? "NONE" : symbol.value
+    }
+    newUnderlyingAssetEntity.price = zeroBD
+
+    // If the underlying asset is ETH, set the name and symbol accordingly
+    if (newUnderlyingAssetEntity.id == '0x0000000000000000000000000000000000000000') {
+      newUnderlyingAssetEntity.name = 'Ether'
+      newUnderlyingAssetEntity.symbol = 'ETH'
+    }
+
     // Return the created entity with newly assigned properties.
-    return underlyingAsset as UnderlyingAsset
+    return newUnderlyingAssetEntity as UnderlyingAsset
   } else {
     // Return loaded entity if it already exists
-    return underlyingAsset as UnderlyingAsset
+    return existingUnderlyingAssetEntity as UnderlyingAsset
   }
 }
 
