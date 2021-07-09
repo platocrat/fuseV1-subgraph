@@ -136,6 +136,7 @@ export function createUnderlyingAsset(
   let market: Market
   market = new Market(marketAddress)
 
+  // Get the underlying token address
   let contract = CToken.bind(Address.fromString(marketAddress))
   market.underlyingAddress = contract.underlying()
 
@@ -144,11 +145,15 @@ export function createUnderlyingAsset(
   let underlyingAssetEntity = UnderlyingAsset
     .load(underlyingAddress)
 
+  // Used to _prevent_ the subgraph from throwing an error that the newly 
+  // created entity does not have an ID.
+  underlyingAsset = new UnderlyingAsset(underlyingAddress)
+
   // Used to handle duplicate UnderlyingAsset entities, return existing entity
   if (!underlyingAssetEntity) {
     // If the market address is an address of an Ethereum asset...
     if (marketAddress == cETHAddress) {
-      let underlyingAsset = new UnderlyingAsset(underlyingAddress)
+      underlyingAsset = new UnderlyingAsset(underlyingAddress)
       underlyingAsset.price = zeroBD
       underlyingAsset.name = 'Ether'
       underlyingAsset.symbol = 'ETH'
@@ -175,10 +180,12 @@ export function createUnderlyingAsset(
       }
       underlyingAsset.price = zeroBD
     }
+    // Return the created entity with newly assigned properties.
+    return underlyingAsset as UnderlyingAsset
+  } else {
+    // Return loaded entity if it already exists
     return underlyingAsset as UnderlyingAsset
   }
-
-  return underlyingAsset as UnderlyingAsset
 }
 
 export function createAccountCToken(
